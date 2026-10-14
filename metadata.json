@@ -1,0 +1,8 @@
+{
+  "name": "Remix TeenWork — фриланс-биржа для подростков",
+  "description": "Платформа микрозадач для подростков от 14 лет без ИП, самозанятости и бюрократии.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

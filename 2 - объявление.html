@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- МГНОВЕННОЕ ВОССТАНОВЛЕНИЕ НАСТРОЕК (БЕЗ МЕРЦАНИЯ ПРИ ПЕРЕЗАГРУЗКЕ) -->
+    <script>
+      (function() {
+        try {
+          var s = localStorage.getItem('vw_settings');
+          if (s) {
+            var p = JSON.parse(s);
+            if (p.theme) document.documentElement.setAttribute('data-theme', p.theme);
+            if (p.lang) document.documentElement.lang = p.lang;
+          }
+        } catch(e) {}
+      })();
+    </script>
+    <title>Разместить заказ — Vibe Working</title>
+    <meta name="description" content="Разместите задание на бирже микрозадач для подростков Vibe Working без бюрократии и договоров." />
+    <meta property="og:title" content="Разместить заказ — Vibe Working" />
+    <meta property="og:description" content="Опубликуйте заказ и получите первые отклики от исполнителей уже через несколько минут." />
+    <meta property="og:type" content="website" />
+    <style>
+      :root {
+        --bg: #1c1c1e;
+        --bg-elev: #262629;
+        --bg-deep: #1c1c1e;
+        --border: #3a3a3e;
+        --text: #e6e6e8;
+        --text-muted: #9a9aa2;
+        --accent: #2ecc8f;
+        --accent-soft: rgba(46, 204, 143, 0.12);
+        --accent-border: rgba(46, 204, 143, 0.35);
+        --header-bg: rgba(28, 28, 30, 0.92);
+        --placeholder: #636369;
+        --danger: #ef4444;
+        --danger-soft: rgba(239, 68, 68, 0.12);
+        --danger-border: rgba(239, 68, 68, 0.4);
+        --danger-text: #f87171;
+        --gear: #66666e;
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        --overlay: rgba(0, 0, 0, 0.75);
+        --accent-on: #1c1c1e;
+      }
+
+      [data-theme="light"] {
+        --bg: #f4f4f6;
+        --bg-elev: #ffffff;
+        --bg-deep: #ececef;
+        --border: #d9d9de;
+        --text: #1c1c1e;
+        --text-muted: #6a6a72;
+        --accent: #14a76c;
+        --accent-soft: rgba(20, 167, 108, 0.12);
+        --accent-border: rgba(20, 167, 108, 0.45);
+        --header-bg: rgba(244, 244, 246, 0.92);
+        --placeholder: #a0a0a8;
+        --danger: #dc2626;
+        --danger-soft: rgba(220, 38, 38, 0.1);
+        --danger-border: rgba(220, 38, 38, 0.4);
+        --danger-text: #dc2626;
+        --gear: #66666e;
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        --overlay: rgba(0, 0, 0, 0.45);
+        --accent-on: #ffffff;
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html {
+        scroll-behavior: smooth;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+      }
+
+      body {
+        min-height: 100vh;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      a { color: inherit; text-decoration: none; }
+      button, input, textarea, select { font-family: inherit; }
+
+      .container { width: 100%; max-width: 980px; margin: 0 auto; padding: 0 20px; }
+
+      /* ШЕСТЕРЁНКИ НАСТРОЕК */
+      .gear-scroll-indicator {
+        position: fixed;
+        bottom: 24px;
+        left: 24px;
+        width: 70px;
+        height: 70px;
+        z-index: 500;
+        pointer-events: auto;
+        cursor: pointer;
+        opacity: 0.75;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .gear-scroll-indicator:hover { opacity: 1; }
+      .gear-scroll-indicator:active { transform: scale(0.95); }
+      .gear-scroll-indicator svg { width: 100%; height: 100%; display: block; overflow: visible; }
+      .gear-scroll-indicator svg .gear-body {
+        fill: var(--gear);
+        transition: fill 0.3s ease, filter 0.3s ease;
+      }
+      .gear-scroll-indicator:hover svg .gear-body {
+        fill: var(--accent);
+        filter: drop-shadow(0 0 4px rgba(46, 204, 143, 0.3));
+      }
+      .gear-scroll-indicator svg .gear-inner { fill: var(--bg); transition: fill 0.3s ease; }
+      .gear-scroll-indicator svg .gear-group { will-change: transform; }
+
+      /* ШАПКА */
+      .header {
+        position: sticky; top: 0; z-index: 100;
+        background-color: var(--header-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+      }
+      .header-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+
+      .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; display: inline-flex; align-items: center; gap: 6px; user-select: none; }
+      .logo-accent { color: var(--text); }
+      .logo-muted { color: var(--text-muted); }
+      .logo-dot { width: 7px; height: 7px; background-color: var(--accent); border-radius: 50%; display: inline-block; }
+
+      .nav-menu { display: flex; align-items: center; gap: 20px; list-style: none; }
+      .nav-link { color: var(--text-muted); font-size: 15px; font-weight: 500; transition: color 0.2s ease; }
+      .nav-link:hover { color: var(--accent); }
+
+      .auth-nav-container { display: flex; align-items: center; gap: 10px; }
+      .vw-account-link, .btn-auth-open {
+        min-height: 40px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center;
+        gap: 8px; padding: 8px 14px; border-radius: 10px; font-size: 14px; font-weight: 600;
+        white-space: nowrap; text-decoration: none; cursor: pointer;
+      }
+      .btn-auth-open {
+        background-color: transparent; border: 1px solid var(--border); color: var(--text);
+        transition: all 0.25s ease;
+      }
+      .btn-auth-open:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 14px var(--accent-soft); }
+
+      .vw-account-link { border: 1px solid var(--border); color: var(--text); background: var(--bg-elev); max-width: 220px; }
+      .vw-account-link:hover { border-color: var(--accent); }
+      .vw-nav-avatar {
+        width: 26px; height: 26px; flex: 0 0 26px; display: inline-flex; align-items: center; justify-content: center;
+        overflow: hidden; border-radius: 50%; background: var(--accent); color: var(--accent-on); font-size: 12px; font-weight: 800;
+      }
+      .vw-nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .vw-nav-name { overflow: hidden; text-overflow: ellipsis; }
+
+      .btn-logout-small {
+        background-color: transparent; border: 1px solid var(--border); color: var(--text-muted);
+        padding: 7px 10px; border-radius: 9px; font-size: 13px; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+      }
+      .btn-logout-small:hover { border-color: var(--danger); color: var(--danger); }
+
+      /* ОСНОВНОЙ КОНТЕНТ */
+      .page-content { padding: 48px 0 80px; }
+
+      .back-nav {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--text-muted); font-size: 14px; font-weight: 500;
+        margin-bottom: 24px; transition: color 0.2s ease;
+      }
+      .back-nav:hover { color: var(--accent); }
+
+      .page-header { margin-bottom: 36px; }
+      .page-badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        background-color: var(--bg-elev); border: 1px solid var(--border);
+        color: var(--accent); padding: 5px 12px; border-radius: 9999px;
+        font-size: 12px; font-weight: 600; margin-bottom: 14px;
+      }
+      .page-title { font-size: 36px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 10px; }
+      .page-subtitle { color: var(--text-muted); font-size: 16px; max-width: 680px; line-height: 1.55; }
+
+      /* ФОРМА ЗАКАЗА */
+      .order-card {
+        background-color: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 36px;
+        box-shadow: var(--shadow);
+      }
+
+      .form-section { margin-bottom: 28px; }
+      .form-label { display: block; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+      .form-label span { color: var(--accent); }
+      .form-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+
+      .form-control {
+        width: 100%; background-color: var(--bg-deep); border: 1px solid var(--border); color: var(--text);
+        padding: 14px 16px; border-radius: 12px; font-size: 15px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease; outline: none;
+      }
+      .form-control::placeholder { color: var(--placeholder); }
+      .form-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+      textarea.form-control { min-height: 130px; resize: vertical; line-height: 1.5; }
+
+      /* ВЫБОР КАТЕГОРИИ */
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .cat-chip {
+        background-color: var(--bg-deep);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        padding: 12px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      .cat-chip .cat-icon { font-size: 20px; }
+      .cat-chip:hover { border-color: var(--accent); color: var(--text); }
+      .cat-chip.selected {
+        border-color: var(--accent);
+        background-color: var(--accent-soft);
+        color: var(--accent);
+        box-shadow: 0 0 16px var(--accent-soft);
+      }
+
+      /* БЮДЖЕТ И ВАЛЮТА */
+      .budget-row { display: flex; gap: 12px; }
+      .budget-input-wrapper { flex: 1; position: relative; }
+      .currency-select {
+        width: 140px; background-color: var(--bg-deep); border: 1px solid var(--border); color: var(--text);
+        padding: 14px 16px; border-radius: 12px; font-size: 15px; font-weight: 600;
+        outline: none; cursor: pointer; transition: border-color 0.2s ease;
+      }
+      .currency-select:focus { border-color: var(--accent); }
+
+      /* ПРЕИМУЩЕСТВА */
+      .form-perks {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+        margin: 32px 0; padding: 20px;
+        background-color: var(--bg-deep); border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+      .perk-item { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: var(--text); }
+      .perk-icon { color: var(--accent); display: flex; flex-shrink: 0; }
+
+      .btn-publish {
+        width: 100%; background-color: var(--bg-elev); border: 1px solid var(--accent); color: var(--accent);
+        font-size: 16px; font-weight: 700; padding: 16px; border-radius: 12px;
+        cursor: pointer; transition: all 0.25s ease;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+      }
+      .btn-publish:hover { background-color: var(--accent); color: var(--accent-on); box-shadow: 0 0 24px var(--accent-border); transform: translateY(-2px); }
+
+      /* МОДАЛКИ, ТОАСТ И НАСТРОЙКИ */
+      .modal-overlay {
+        position: fixed; inset: 0; background-color: var(--overlay);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        z-index: 1000; display: flex; align-items: center; justify-content: center;
+        padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      }
+      .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+      .modal-box {
+        background-color: var(--bg-elev); border: 1px solid var(--border); border-radius: 20px;
+        width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+        padding: 32px; position: relative; transform: scale(0.95);
+        transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.3s ease;
+        box-shadow: var(--shadow);
+      }
+      .modal-overlay.active .modal-box { transform: scale(1); }
+
+      .modal-close-btn {
+        position: absolute; top: 20px; right: 20px; background: transparent;
+        border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center; transition: color 0.2s ease;
+      }
+      .modal-close-btn:hover { color: var(--text); }
+      .modal-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+      .modal-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+
+      .auth-mode-switch {
+        display: grid; grid-template-columns: 1fr 1fr; background-color: var(--bg-deep);
+        padding: 4px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--border);
+      }
+      .auth-mode-btn {
+        background: transparent; border: none; color: var(--text-muted); padding: 10px;
+        border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .auth-mode-btn.active { background-color: var(--bg-elev); color: var(--text); border: 1px solid var(--border); }
+
+      .btn-google-auth {
+        width: 100%; background-color: var(--bg-deep); border: 1px solid var(--border);
+        color: var(--text); padding: 13px; border-radius: 12px; font-size: 15px;
+        font-weight: 600; display: flex; align-items: center; justify-content: center;
+        gap: 12px; cursor: pointer; transition: all 0.25s ease; margin-bottom: 20px;
+      }
+      .btn-google-auth:hover { border-color: var(--accent); background-color: var(--bg-elev); box-shadow: 0 0 16px var(--accent-soft); }
+
+      .divider-text {
+        display: flex; align-items: center; gap: 12px; color: var(--text-muted);
+        font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;
+      }
+      .divider-text::before, .divider-text::after { content: ""; flex: 1; height: 1px; background-color: var(--border); }
+
+      .auth-method-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+      .auth-method-tab {
+        flex: 1; background-color: var(--bg-deep); border: 1px solid var(--border); color: var(--text-muted);
+        padding: 9px; border-radius: 10px; font-size: 13px; font-weight: 600;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        gap: 8px; transition: all 0.2s ease;
+      }
+      .auth-method-tab.active { border-color: var(--accent); color: var(--accent); background-color: var(--accent-soft); }
+
+      .form-error {
+        display: none; background-color: var(--danger-soft);
+        border: 1px solid var(--danger-border); color: var(--danger-text);
+        padding: 12px 16px; border-radius: 10px; font-size: 14px;
+        margin-bottom: 20px; align-items: center; gap: 10px;
+      }
+
+      .toast {
+        position: fixed; bottom: 28px; right: 28px; background-color: var(--bg-elev);
+        border: 1px solid var(--accent); color: var(--text); padding: 14px 20px; border-radius: 12px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25), 0 0 16px var(--accent-soft);
+        display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500;
+        z-index: 9999; opacity: 0; transform: translateY(20px); pointer-events: none;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+      .toast-badge { color: var(--accent); display: flex; }
+
+      /* НАСТРОЙКИ МОДАЛКА */
+      .settings-section { margin-bottom: 24px; }
+      .settings-label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+      .settings-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .currency-options { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .settings-opt {
+        background-color: var(--bg-deep); border: 1px solid var(--border); color: var(--text-muted);
+        padding: 13px 14px; border-radius: 12px; font-size: 14px; font-weight: 600;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        gap: 8px; transition: all 0.2s ease;
+      }
+      .settings-opt:hover { border-color: var(--accent); color: var(--text); }
+      .settings-opt.active { border-color: var(--accent); color: var(--accent); background-color: var(--accent-soft); }
+      .settings-row-btn {
+        width: 100%; background-color: var(--bg-deep); border: 1px solid var(--border); color: var(--text);
+        padding: 15px 18px; border-radius: 12px; font-size: 15px; font-weight: 600;
+        cursor: pointer; display: flex; align-items: center; gap: 14px;
+        margin-bottom: 12px; transition: all 0.2s ease; text-align: left;
+      }
+      .settings-row-btn:hover { border-color: var(--accent); color: var(--accent); }
+      .settings-save-notice { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 14px; }
+
+      /* МОНОХРОМНЫЕ ЭМОДЗИ В РАЗДЕЛЕ НАСТРОЕК */
+      #settings-modal .emoji-mono,
+      #settings-modal .settings-opt span.emoji-mono,
+      #settings-modal .settings-opt span:first-child:not(.cur-symbol):not([data-i18n]),
+      .settings-section .emoji-mono {
+        filter: grayscale(100%);
+        -webkit-filter: grayscale(100%);
+        opacity: 0.82;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s ease, filter 0.2s ease;
+      }
+      #settings-modal .settings-opt:hover .emoji-mono,
+      #settings-modal .settings-opt.active .emoji-mono {
+        opacity: 1;
+        filter: grayscale(100%);
+        -webkit-filter: grayscale(100%);
+      }
+
+      @media (max-width: 768px) {
+        .page-title { font-size: 28px; }
+        .order-card { padding: 24px 18px; }
+        .form-perks { grid-template-columns: 1fr; }
+        .budget-row { flex-direction: column; }
+        .currency-select { width: 100%; }
+        .category-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ИНДИКАТОР ШЕСТЕРЕНОК (НАСТРОЙКИ) -->
+    <div class="gear-scroll-indicator" id="gearIndicator" onclick="openSettingsModal()" title="Настройки" aria-label="Настройки">
+      <svg viewBox="20 20 160 160" xmlns="http://www.w3.org/2000/svg">
+        <g class="gear-group" id="gear-big">
+          <path class="gear-body" id="big-gear-path" fill-rule="evenodd" />
+          <circle class="gear-inner" id="big-gear-inner" />
+        </g>
+        <g class="gear-group" id="gear-small">
+          <path class="gear-body" id="small-gear-path" fill-rule="evenodd" />
+          <circle class="gear-inner" id="small-gear-inner" />
+        </g>
+      </svg>
+    </div>
+
+    <!-- ШАПКА -->
+    <header class="header">
+      <div class="container header-inner">
+        <a href="index.html" class="logo">
+          <span class="logo-accent">Vibe</span><span class="logo-muted">Working</span>
+          <span class="logo-dot"></span>
+        </a>
+
+        <nav style="display: flex; align-items: center; gap: 14px;">
+          <ul class="nav-menu">
+            <li><a href="index.html#tasks" class="nav-link" data-i18n="nav.tasks">Задания</a></li>
+            <li><a href="index.html#how-it-works" class="nav-link" data-i18n="nav.how">Как это работает</a></li>
+          </ul>
+          <button type="button" class="btn-logout-small" onclick="openSettingsModal()" title="Настройки" style="margin-right: 2px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+          <div class="auth-nav-container" id="auth-nav-container"></div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ОСНОВНАЯ СЕКЦИЯ -->
+    <main class="page-content">
+      <div class="container">
+        <a href="index.html#tasks" class="back-nav">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span data-i18n="nav.backToTasks">Вернуться к ленте заданий</span>
+        </a>
+
+        <div class="page-header">
+          <div class="page-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span data-i18n="post.badge">Публикация заказа</span>
+          </div>
+          <h1 class="page-title" data-i18n="post.title">Разместить заказ на Vibe Working</h1>
+          <p class="page-subtitle" data-i18n="post.subtitle">
+            Опишите простую онлайн-задачу, установите понятную цену и получите отклики от подростков-исполнителей уже через пару минут без бумажных договоров.
+          </p>
+        </div>
+
+        <div class="order-card">
+          <form id="create-task-form" onsubmit="handleCreateTask(event)">
+            <!-- КАТЕГОРИЯ -->
+            <div class="form-section">
+              <label class="form-label"><span data-i18n="post.categoryLabel">Выберите категорию</span> <span>*</span></label>
+              <div class="category-grid" id="category-selector">
+                <div class="cat-chip selected" data-cat="тексты" onclick="selectCategory('тексты')">
+                  <span class="cat-icon">✍️</span>
+                  <span data-i18n="post.catTexts">Тексты</span>
+                </div>
+                <div class="cat-chip" data-cat="дизайн" onclick="selectCategory('дизайн')">
+                  <span class="cat-icon">🎨</span>
+                  <span data-i18n="post.catDesign">Дизайн</span>
+                </div>
+                <div class="cat-chip" data-cat="видео" onclick="selectCategory('видео')">
+                  <span class="cat-icon">🎬</span>
+                  <span data-i18n="post.catVideo">Видео / Reels</span>
+                </div>
+                <div class="cat-chip" data-cat="учеба" onclick="selectCategory('учеба')">
+                  <span class="cat-icon">📚</span>
+                  <span data-i18n="post.catStudy">Учёба</span>
+                </div>
+                <div class="cat-chip" data-cat="таблицы" onclick="selectCategory('таблицы')">
+                  <span class="cat-icon">📊</span>
+                  <span data-i18n="post.catTables">Таблицы</span>
+                </div>
+                <div class="cat-chip" data-cat="соцсети" onclick="selectCategory('соцсети')">
+                  <span class="cat-icon">📱</span>
+                  <span data-i18n="post.catSocial">Соцсети</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- НАЗВАНИЕ -->
+            <div class="form-section">
+              <label class="form-label" for="task-title-input"><span data-i18n="post.titleLabel">Название задания</span> <span>*</span></label>
+              <div class="form-hint">Коротко и ясно сформулируйте суть задачи</div>
+              <input
+                type="text"
+                id="task-title-input"
+                class="form-control"
+                placeholder="Например: Смонтировать 3 коротких Reels для магазина кроссовок"
+                data-i18n-placeholder="post.titlePlaceholder"
+                required
+                maxlength="120"
+              />
+            </div>
+
+            <!-- БЮДЖЕТ -->
+            <div class="form-section">
+              <label class="form-label" for="task-budget-input"><span data-i18n="post.budgetLabel">Бюджет вознаграждения</span> <span>*</span></label>
+              <div class="form-hint">Укажите сумму, которую исполнитель получит за выполненную работу</div>
+              <div class="budget-row">
+                <div class="budget-input-wrapper">
+                  <input
+                    type="number"
+                    id="task-budget-input"
+                    class="form-control"
+                    placeholder="1500"
+                    min="10"
+                    step="10"
+                    required
+                  />
+                </div>
+                <select id="task-currency-select" class="currency-select" onchange="handleTaskCurrencyChange(this.value)">
+                  <option value="RUB">₽ RUB</option>
+                  <option value="USD">$ USD</option>
+                  <option value="EUR">€ EUR</option>
+                  <option value="BYN">Br BYN</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- ОПИСАНИЕ -->
+            <div class="form-section">
+              <label class="form-label" for="task-desc-input"><span data-i18n="post.descLabel">Подробное описание</span> <span>*</span></label>
+              <div class="form-hint">Опишите требования, формат сдачи работы, дедлайн и что вы предоставите</div>
+              <textarea
+                id="task-desc-input"
+                class="form-control"
+                placeholder="Что конкретно нужно сделать?&#10;Пример: Предоставим исходные видео и трек. Нужно нарезать динамичные кадры, наложить субтитры и добавить звуковые эффекты в CapCut или Premiere..."
+                data-i18n-placeholder="post.descPlaceholder"
+                required
+              ></textarea>
+            </div>
+
+            <!-- БЕЙДЖИ ПРЕИМУЩЕСТВ -->
+            <div class="form-perks">
+              <div class="perk-item">
+                <span class="perk-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </span>
+                <span data-i18n="post.perk1">Без ИП и бумажных договоров</span>
+              </div>
+              <div class="perk-item">
+                <span class="perk-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </span>
+                <span data-i18n="post.perk2">Отклики в первые 15 минут</span>
+              </div>
+              <div class="perk-item">
+                <span class="perk-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                  </svg>
+                </span>
+                <span data-i18n="post.perk3">Выплаты на карту или СБП</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-publish" id="publish-submit-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Опубликовать задание</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- МОДАЛКА НАСТРОЕК (ПО IP И ПРОФИЛЮ) -->
+    <div class="modal-overlay" id="settings-modal">
+      <div class="modal-box">
+        <button class="modal-close-btn" onclick="closeSettingsModal()" aria-label="Закрыть">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <h3 class="modal-title" data-i18n="settings.title">Настройки</h3>
+        <p class="modal-subtitle" data-i18n="settings.subtitle">Настройки сохраняются на сервере по вашему IP и профилю</p>
+
+        <div class="settings-section">
+          <label class="settings-label" data-i18n="settings.theme">Тема оформления</label>
+          <div class="settings-options">
+            <button type="button" class="settings-opt" id="theme-opt-dark" onclick="setTheme('dark')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <span data-i18n="settings.theme.dark">Тёмная</span>
+            </button>
+            <button type="button" class="settings-opt" id="theme-opt-light" onclick="setTheme('light')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="4"></circle>
+                <line x1="12" y1="2" x2="12" y2="4"></line>
+                <line x1="12" y1="20" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+                <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="4" y2="12"></line>
+                <line x1="20" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+                <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+              </svg>
+              <span data-i18n="settings.theme.light">Светлая</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <label class="settings-label" data-i18n="settings.language">Язык</label>
+          <div class="settings-options">
+            <button type="button" class="settings-opt" id="lang-opt-ru" onclick="setLanguage('ru')">
+              <span class="emoji-mono">🇷🇺</span> <span data-i18n="lang.ru">Русский</span>
+            </button>
+            <button type="button" class="settings-opt" id="lang-opt-en" onclick="setLanguage('en')">
+              <span class="emoji-mono">🇬🇧</span> <span data-i18n="lang.en">English</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <label class="settings-label" data-i18n="settings.currency">Валюта</label>
+          <div class="settings-options currency-options">
+            <button type="button" class="settings-opt" id="cur-opt-rub" onclick="setCurrency('RUB')">
+              <span class="cur-symbol">₽</span> <span data-i18n="cur.rub">Рубль</span>
+            </button>
+            <button type="button" class="settings-opt" id="cur-opt-usd" onclick="setCurrency('USD')">
+              <span class="cur-symbol">$</span> <span data-i18n="cur.usd">Доллар</span>
+            </button>
+            <button type="button" class="settings-opt" id="cur-opt-eur" onclick="setCurrency('EUR')">
+              <span class="cur-symbol">€</span> <span data-i18n="cur.eur">Евро</span>
+            </button>
+            <button type="button" class="settings-opt" id="cur-opt-byn" onclick="setCurrency('BYN')">
+              <span class="cur-symbol">Br</span> <span data-i18n="cur.byn">Бел. рубль</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="settings-row-btn" onclick="window.location.href='3 - личный кабинет.html'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span data-i18n="settings.account">Личный кабинет</span>
+          <span class="settings-row-meta" data-i18n="settings.account.meta">Профиль и заказы</span>
+        </button>
+
+        <button type="button" class="settings-row-btn danger" id="settings-logout-btn" onclick="logoutFromSettings()" style="display: none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span data-i18n="settings.logout">Выйти из аккаунта</span>
+        </button>
+
+        <div class="settings-save-notice" id="settings-ip-notice">Синхронизировано по IP</div>
+      </div>
+    </div>
+
+    <!-- МОДАЛКА АВТОРИЗАЦИИ (РЕАЛЬНЫЕ АККАУНТЫ) -->
+    <div class="modal-overlay" id="auth-modal">
+      <div class="modal-box">
+        <button class="modal-close-btn" onclick="closeAuthModal()" aria-label="Закрыть">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <h3 class="modal-title" id="auth-modal-title">Вход в Vibe Working</h3>
+        <p class="modal-subtitle" id="auth-modal-subtitle">Войдите или зарегистрируйтесь, чтобы опубликовать задание</p>
+
+        <div class="auth-mode-switch">
+          <button type="button" class="auth-mode-btn active" id="btn-mode-login" onclick="setAuthMode('login')">Войти</button>
+          <button type="button" class="auth-mode-btn" id="btn-mode-register" onclick="setAuthMode('register')">Регистрация</button>
+        </div>
+
+        <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Продолжить через Google</span>
+        </button>
+
+        <div class="divider-text">или через контакты</div>
+
+        <div class="auth-method-tabs">
+          <button type="button" class="auth-method-tab active" id="tab-method-phone" onclick="setAuthMethod('phone')">📱 По телефону</button>
+          <button type="button" class="auth-method-tab" id="tab-method-email" onclick="setAuthMethod('email')">✉️ По почте</button>
+        </div>
+
+        <div class="form-error" id="auth-error-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="auth-error-text">Заполните поля</span>
+        </div>
+
+        <form id="auth-main-form" onsubmit="handleAuthSubmit(event)">
+          <div class="form-section" id="group-auth-name" style="display: none; margin-bottom: 16px;">
+            <label class="form-label" for="auth-input-name">Ваше имя или никнейм</label>
+            <input type="text" class="form-control" id="auth-input-name" placeholder="Например: Денис" />
+          </div>
+
+          <div id="fields-phone-block">
+            <div class="form-section" style="margin-bottom: 16px;">
+              <label class="form-label" for="auth-input-phone">Номер телефона</label>
+              <input type="tel" class="form-control" id="auth-input-phone" placeholder="+7 (999) 000-00-00" />
+            </div>
+            <div class="form-section" style="margin-bottom: 16px;">
+              <label class="form-label" for="auth-input-sms">Код из СМС</label>
+              <input type="text" class="form-control" id="auth-input-sms" placeholder="Введите код" maxlength="6" />
+            </div>
+          </div>
+
+          <div id="fields-email-block" style="display: none;">
+            <div class="form-section" style="margin-bottom: 16px;">
+              <label class="form-label" for="auth-input-email">Электронная почта</label>
+              <input type="email" class="form-control" id="auth-input-email" placeholder="example@mail.ru" />
+            </div>
+            <div class="form-section" style="margin-bottom: 16px;">
+              <label class="form-label" for="auth-input-password">Пароль</label>
+              <input type="password" class="form-control" id="auth-input-password" placeholder="Придумайте пароль" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-publish" style="padding: 13px;" id="auth-submit-btn">
+            <span>Войти в аккаунт</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ТОАСТ -->
+    <div class="toast" id="toast">
+      <span class="toast-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </span>
+      <span id="toast-text">Готово!</span>
+    </div>
+
+    <!-- GOOGLE IDENTITY SERVICES & FIREBASE GOOGLE OAUTH -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script type="module" src="/src/firebase-auth.ts"></script>
+    <script type="module" src="/src/vibe-settings.ts"></script>
+
+    <script>
+      // Мгновенная инициализация настроек из локального хранилища (без сброса на дефолт при перезагрузке)
+      let initialSettings = { theme: 'dark', lang: 'ru', currency: 'RUB' };
+      try {
+        const rawSaved = localStorage.getItem('vw_settings');
+        if (rawSaved) {
+          const parsed = JSON.parse(rawSaved);
+          if (parsed.theme) initialSettings.theme = parsed.theme;
+          if (parsed.lang) initialSettings.lang = parsed.lang;
+          if (parsed.currency) initialSettings.currency = parsed.currency;
+        }
+      } catch (_) {}
+
+      let currentTheme = initialSettings.theme;
+      let currentLang = initialSettings.lang;
+      let currentCurrency = initialSettings.currency;
+      let currentUser = null;
+      let sessionToken = localStorage.getItem('vw_session_token') || '';
+      let selectedCategory = 'тексты';
+
+      document.documentElement.setAttribute('data-theme', currentTheme);
+      document.documentElement.lang = currentLang;
+
+      function getAuthHeaders() {
+        const headers = {};
+        if (sessionToken) {
+          headers['Authorization'] = 'Bearer ' + sessionToken;
+          headers['x-session-token'] = sessionToken;
+        }
+        return headers;
+      }
+
+      function selectCategory(cat) {
+        selectedCategory = cat;
+        document.querySelectorAll('.cat-chip').forEach(chip => {
+          chip.classList.toggle('selected', chip.dataset.cat === cat);
+        });
+      }
+
+      function applyTranslations() {
+        if (window.VWSettings && typeof window.VWSettings.applyTranslations === 'function') {
+          window.VWSettings.applyTranslations();
+          return;
+        }
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+          const key = el.getAttribute('data-i18n');
+          // Fallback dictionary
+          if (key === 'nav.backToTasks') el.textContent = currentLang === 'ru' ? 'Вернуться к ленте заданий' : 'Back to tasks feed';
+          if (key === 'post.badge') el.textContent = currentLang === 'ru' ? 'Публикация заказа' : 'Task publishing';
+          if (key === 'post.title') el.textContent = currentLang === 'ru' ? 'Разместить заказ на Vibe Working' : 'Post a task on Vibe Working';
+          if (key === 'post.categoryLabel') el.textContent = currentLang === 'ru' ? 'Выберите категорию' : 'Select category';
+          if (key === 'post.titleLabel') el.textContent = currentLang === 'ru' ? 'Название задания' : 'Task title';
+          if (key === 'post.budgetLabel') el.textContent = currentLang === 'ru' ? 'Бюджет вознаграждения' : 'Budget';
+          if (key === 'post.descLabel') el.textContent = currentLang === 'ru' ? 'Подробное описание' : 'Detailed description';
+          if (key === 'post.submit') el.textContent = currentLang === 'ru' ? 'Опубликовать задание' : 'Publish task';
+          if (key === 'nav.tasks') el.textContent = currentLang === 'ru' ? 'Задания' : 'Tasks';
+          if (key === 'nav.how') el.textContent = currentLang === 'ru' ? 'Как это работает' : 'How it works';
+        });
+        document.documentElement.lang = currentLang;
+      }
+
+      // Загрузка настроек с сервера
+      async function loadServerSettings() {
+        if (window.VWSettings && typeof window.VWSettings.syncServerSettings === 'function') {
+          await window.VWSettings.syncServerSettings();
+          const s = window.VWSettings.getSettings();
+          currentTheme = s.theme;
+          currentLang = s.lang;
+          currentCurrency = s.currency;
+          updateSettingsUI();
+          applyTranslations();
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/settings', { headers: getAuthHeaders() });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.settings) {
+              currentTheme = data.settings.theme || currentTheme;
+              currentLang = data.settings.lang || currentLang;
+              currentCurrency = data.settings.currency || currentCurrency;
+
+              localStorage.setItem('vw_settings', JSON.stringify({
+                theme: currentTheme,
+                lang: currentLang,
+                currency: currentCurrency,
+                updatedAt: Date.now()
+              }));
+
+              document.documentElement.setAttribute('data-theme', currentTheme);
+              document.documentElement.lang = currentLang;
+              updateSettingsUI();
+              applyTranslations();
+
+              const noticeEl = document.getElementById('settings-ip-notice');
+              if (noticeEl && data.ip) {
+                noticeEl.textContent = data.source === 'user'
+                  ? (currentLang === 'ru' ? 'Синхронизировано в профиле' : 'Synced with your profile')
+                  : (currentLang === 'ru' ? `Синхронизировано по IP: ${data.ip}` : `Synced by IP: ${data.ip}`);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Error loading settings:', e);
+        }
+      }
+
+      async function saveServerSettings() {
+        const payload = {
+          theme: currentTheme,
+          lang: currentLang,
+          currency: currentCurrency,
+          updatedAt: Date.now()
+        };
+        localStorage.setItem('vw_settings', JSON.stringify(payload));
+
+        if (window.VWSettings && typeof window.VWSettings.saveServerSettings === 'function') {
+          await window.VWSettings.saveServerSettings();
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const noticeEl = document.getElementById('settings-ip-notice');
+            if (noticeEl && data.ip) {
+              noticeEl.textContent = currentUser
+                ? (currentLang === 'ru' ? 'Синхронизировано в профиле' : 'Synced to profile')
+                : (currentLang === 'ru' ? `Синхронизировано по IP: ${data.ip}` : `Synced by IP: ${data.ip}`);
+            }
+          }
+        } catch (e) {}
+      }
+
+      function updateSettingsUI() {
+        document.getElementById('theme-opt-dark')?.classList.toggle('active', currentTheme === 'dark');
+        document.getElementById('theme-opt-light')?.classList.toggle('active', currentTheme === 'light');
+        document.getElementById('lang-opt-ru')?.classList.toggle('active', currentLang === 'ru');
+        document.getElementById('lang-opt-en')?.classList.toggle('active', currentLang === 'en');
+        document.querySelectorAll('.currency-options .settings-opt').forEach(btn => {
+          btn.classList.toggle('active', btn.id === 'cur-opt-' + currentCurrency.toLowerCase());
+        });
+        const curSelect = document.getElementById('task-currency-select');
+        if (curSelect && curSelect.value !== currentCurrency) {
+          curSelect.value = currentCurrency;
+        }
+      }
+
+      function setTheme(theme) {
+        currentTheme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        updateSettingsUI();
+        if (window.VWSettings && typeof window.VWSettings.setTheme === 'function') {
+          window.VWSettings.setTheme(theme);
+        } else {
+          saveServerSettings();
+        }
+        showToast(theme === 'light' ? (currentLang === 'ru' ? 'Светлая тема включена' : 'Light theme enabled') : (currentLang === 'ru' ? 'Тёмная тема включена' : 'Dark theme enabled'));
+      }
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang;
+        applyTranslations();
+        updateSettingsUI();
+        if (window.VWSettings && typeof window.VWSettings.setLanguage === 'function') {
+          window.VWSettings.setLanguage(lang);
+        } else {
+          saveServerSettings();
+        }
+        showToast(lang === 'ru' ? 'Язык: Русский' : 'Language: English');
+      }
+
+      function setCurrency(cur) {
+        currentCurrency = cur;
+        const curSelect = document.getElementById('task-currency-select');
+        if (curSelect) curSelect.value = cur;
+        updateSettingsUI();
+        if (window.VWSettings && typeof window.VWSettings.setCurrency === 'function') {
+          window.VWSettings.setCurrency(cur);
+        } else {
+          saveServerSettings();
+        }
+        showToast((currentLang === 'ru' ? 'Валюта: ' : 'Currency: ') + cur);
+      }
+
+      function handleTaskCurrencyChange(cur) {
+        setCurrency(cur);
+      }
+
+      // Слушатель глобальной синхронизации меж страницами
+      window.addEventListener('vw:settings-changed', (e) => {
+        if (e && e.detail) {
+          const s = e.detail;
+          if (s.theme && s.theme !== currentTheme) {
+            currentTheme = s.theme;
+            document.documentElement.setAttribute('data-theme', currentTheme);
+          }
+          if (s.lang && s.lang !== currentLang) {
+            currentLang = s.lang;
+            document.documentElement.lang = currentLang;
+            applyTranslations();
+          }
+          if (s.currency && s.currency !== currentCurrency) {
+            currentCurrency = s.currency;
+          }
+          updateSettingsUI();
+        }
+      });
+
+      // Синхронизация через storage event
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'vw_settings' && e.newValue) {
+          try {
+            const s = JSON.parse(e.newValue);
+            if (s.theme) {
+              currentTheme = s.theme;
+              document.documentElement.setAttribute('data-theme', currentTheme);
+            }
+            if (s.lang) {
+              currentLang = s.lang;
+              document.documentElement.lang = currentLang;
+              applyTranslations();
+            }
+            if (s.currency) {
+              currentCurrency = s.currency;
+            }
+            updateSettingsUI();
+          } catch (_) {}
+        }
+      });
+
+      // Синхронизация и чтение авторизации
+      function getStoredUser() {
+        try {
+          const raw = localStorage.getItem('vw_user') || localStorage.getItem('vw_local_user');
+          return raw ? JSON.parse(raw) : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveStoredUser(user, token) {
+        if (!user) {
+          localStorage.removeItem('vw_user');
+          localStorage.removeItem('vw_local_user');
+          localStorage.removeItem('vw_session_token');
+        } else {
+          localStorage.setItem('vw_user', JSON.stringify(user));
+          localStorage.setItem('vw_local_user', JSON.stringify(user));
+          if (token) localStorage.setItem('vw_session_token', token);
+        }
+        if (window.VWAuth) {
+          window.VWAuth.saveLocal(user, token || (user ? sessionToken : ''), false);
+        }
+      }
+
+      window.syncFirebaseUser = function(googleData) {
+        const stored = getStoredUser();
+        if (!stored) {
+          currentUser = {
+            id: 'user_' + googleData.uid,
+            name: googleData.displayName || googleData.name || 'Пользователь Google',
+            username: (googleData.displayName || googleData.name || 'user').toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 15),
+            email: googleData.email || '',
+            avatar: googleData.photoURL || '',
+            roleKey: 'client',
+            balance: 0,
+            createdAt: new Date().toISOString()
+          };
+          sessionToken = 'token_' + Math.random().toString(36).substring(2);
+          saveStoredUser(currentUser, sessionToken);
+        } else {
+          currentUser = stored;
+          if (googleData.photoURL && !currentUser.avatar) {
+            currentUser.avatar = googleData.photoURL;
+            saveStoredUser(currentUser, sessionToken);
+          }
+        }
+        renderAuthNav();
+      };
+
+      async function checkCurrentAuth() {
+        // 1. Мгновенно читаем пользователя из localStorage (без моргания)
+        currentUser = getStoredUser();
+        sessionToken = localStorage.getItem('vw_session_token') || (currentUser ? 'token_local' : '');
+        renderAuthNav();
+
+        // 2. Фоновая проверка через сервер
+        if (sessionToken) {
+          try {
+            const res = await fetch('/api/auth/me', { headers: getAuthHeaders() });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.user) {
+                currentUser = data.user;
+                saveStoredUser(currentUser, sessionToken);
+                renderAuthNav();
+              } else if (currentUser) {
+                if (window.VWAuth) {
+                  await window.VWAuth.syncUserToServer(currentUser, sessionToken);
+                }
+              }
+            }
+          } catch (e) {
+            // На GitHub Pages или офлайне остаёмся авторизованными через localStorage
+          }
+        }
+      }
+
+      window.addEventListener('vw:auth-changed', () => {
+        currentUser = getStoredUser();
+        sessionToken = localStorage.getItem('vw_session_token') || '';
+        renderAuthNav();
+      });
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'vw_user' || e.key === 'vw_local_user' || e.key === 'vw_session_token') {
+          currentUser = getStoredUser();
+          sessionToken = localStorage.getItem('vw_session_token') || '';
+          renderAuthNav();
+        }
+      });
+
+      function renderAuthNav() {
+        const container = document.getElementById('auth-nav-container');
+        const settingsLogoutBtn = document.getElementById('settings-logout-btn');
+        if (settingsLogoutBtn) {
+          settingsLogoutBtn.style.display = currentUser ? 'flex' : 'none';
+        }
+
+        if (!container) return;
+
+        if (!currentUser) {
+          container.innerHTML = `
+            <button class="btn-auth-open" onclick="openAuthModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+              </svg><span>${escapeHtml(window.VWSettings ? window.VWSettings.t('nav.login') : 'Войти')}</span>
+            </button>`;
+          return;
+        }
+
+        const handle = currentUser.username || currentUser.name;
+        container.innerHTML = `
+          <a class="vw-account-link" href="3 - личный кабинет.html" title="Личный кабинет">
+            <span class="vw-nav-avatar">${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="">` : escapeHtml((handle || 'U').charAt(0).toUpperCase())}</span>
+            <span class="vw-nav-name">${escapeHtml(handle)}</span>
+          </a>
+          <button class="btn-logout-small" onclick="logout()" title="${escapeHtml(window.VWSettings ? window.VWSettings.t('settings.logout') : 'Выйти')}" aria-label="Выйти">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          </button>`;
+      }
+
+      async function logout() {
+        if (window.VWAuth) {
+          await window.VWAuth.logout();
+        } else {
+          try {
+            if (typeof window.signOutFromFirebase === 'function') {
+              await window.signOutFromFirebase();
+            }
+            await fetch('/api/auth/logout', { method: 'POST', headers: getAuthHeaders() });
+          } catch (e) {}
+          saveStoredUser(null);
+        }
+        currentUser = null;
+        sessionToken = '';
+        renderAuthNav();
+        showToast(window.VWSettings ? window.VWSettings.t('toast.logout') : 'Вы вышли из аккаунта');
+      }
+
+      function logoutFromSettings() {
+        closeSettingsModal();
+        logout();
+      }
+
+      // Публикация задания
+      async function handleCreateTask(e) {
+        e.preventDefault();
+
+        if (!currentUser) {
+          showToast('Сначала войдите в аккаунт, чтобы опубликовать заказ');
+          openAuthModal();
+          return;
+        }
+
+        const title = document.getElementById('task-title-input').value.trim();
+        const budget = document.getElementById('task-budget-input').value.trim();
+        const currency = document.getElementById('task-currency-select').value;
+        const description = document.getElementById('task-desc-input').value.trim();
+
+        if (!title || !budget || !description) {
+          showToast('Пожалуйста, заполните все обязательные поля');
+          return;
+        }
+
+        const btn = document.getElementById('publish-submit-btn');
+        btn.disabled = true;
+        btn.querySelector('span').textContent = 'Публикуем...';
+
+        try {
+          const res = await fetch('/api/tasks', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...getAuthHeaders()
+            },
+            body: JSON.stringify({
+              title,
+              description,
+              budget,
+              currency,
+              category: selectedCategory
+            })
+          });
+
+          const data = await res.json();
+          if (data.error) {
+            showToast(data.error);
+            btn.disabled = false;
+            btn.querySelector('span').textContent = 'Опубликовать задание';
+            return;
+          }
+
+          showToast('Задание успешно опубликовано!');
+          setTimeout(() => {
+            window.location.href = 'index.html#tasks';
+          }, 1000);
+        } catch (err) {
+          showToast('Ошибка при публикации задания');
+          btn.disabled = false;
+          btn.querySelector('span').textContent = 'Опубликовать задание';
+        }
+      }
+
+      // Управление Auth модалкой
+      let authMode = 'login';
+      let authMethod = 'phone';
+
+      function openAuthModal() { document.getElementById('auth-modal').classList.add('active'); }
+      function closeAuthModal() { document.getElementById('auth-modal').classList.remove('active'); }
+      function openSettingsModal() { updateSettingsUI(); document.getElementById('settings-modal').classList.add('active'); }
+      function closeSettingsModal() { document.getElementById('settings-modal').classList.remove('active'); }
+
+      function setAuthMode(mode) {
+        authMode = mode;
+        const isReg = mode === 'register';
+        document.getElementById('btn-mode-login').classList.toggle('active', !isReg);
+        document.getElementById('btn-mode-register').classList.toggle('active', isReg);
+        document.getElementById('group-auth-name').style.display = isReg ? 'block' : 'none';
+        document.getElementById('auth-modal-title').textContent = isReg ? 'Регистрация в Vibe Working' : 'Вход в Vibe Working';
+        document.getElementById('auth-submit-btn').querySelector('span').textContent = isReg ? 'Зарегистрироваться' : 'Войти в аккаунт';
+        document.getElementById('auth-error-box').style.display = 'none';
+      }
+
+      function setAuthMethod(method) {
+        authMethod = method;
+        document.getElementById('tab-method-phone').classList.toggle('active', method === 'phone');
+        document.getElementById('tab-method-email').classList.toggle('active', method === 'email');
+        document.getElementById('fields-phone-block').style.display = method === 'phone' ? 'block' : 'none';
+        document.getElementById('fields-email-block').style.display = method === 'email' ? 'block' : 'none';
+        document.getElementById('auth-error-box').style.display = 'none';
+      }
+
+      async function handleGoogleOAuthLogin() {
+        const errBox = document.getElementById('auth-error-box');
+        const errText = document.getElementById('auth-error-text');
+        errBox.style.display = 'none';
+
+        if (typeof window.signInWithGoogleOAuth !== 'function') {
+          errText.textContent = 'Модуль Google OAuth инициализируется... Попробуйте через секунду.';
+          errBox.style.display = 'flex';
+          return;
+        }
+
+        try {
+          showToast('Открываем окно Google...');
+          const googleData = await window.signInWithGoogleOAuth();
+
+          let sessionUser = null;
+          try {
+            const res = await fetch('/api/auth/google', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(googleData)
+            });
+            if (res.ok) {
+              const result = await res.json();
+              if (result.error) {
+                errText.textContent = result.error;
+                errBox.style.display = 'flex';
+                return;
+              }
+              sessionToken = result.token;
+              sessionUser = result.user;
+            }
+          } catch (fetchErr) {
+            console.warn('Backend unavailable, using static fallback:', fetchErr);
+          }
+
+          if (!sessionUser) {
+            sessionToken = 'token_' + Math.random().toString(36).substring(2);
+            sessionUser = {
+              id: 'user_' + googleData.uid,
+              name: googleData.displayName || 'Пользователь Google',
+              username: (googleData.displayName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 15),
+              email: googleData.email,
+              avatar: googleData.photoURL,
+              roleKey: 'client',
+              balance: 0,
+              createdAt: new Date().toISOString()
+            };
+            localStorage.setItem('vw_local_user', JSON.stringify(sessionUser));
+          }
+
+          currentUser = sessionUser;
+          saveStoredUser(currentUser, sessionToken);
+          closeAuthModal();
+          renderAuthNav();
+          loadServerSettings();
+          showToast((currentLang === 'ru' ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
+        } catch (err) {
+          if (err && err.code === 'auth/popup-closed-by-user') {
+            showToast('Вход через Google отменён');
+          } else if (err && err.code === 'auth/unauthorized-domain') {
+            const domain = window.location.hostname;
+            errText.innerHTML = `<strong>Домен ${escapeHtml(domain)} не разрешён в Firebase!</strong><br>В <a href="https://console.firebase.google.com/project/gen-lang-client-0591838063/authentication/settings" target="_blank" style="color:var(--accent);text-decoration:underline;">Firebase Console</a> &rarr; Authentication &rarr; Settings &rarr; Authorized domains добавьте <code>${escapeHtml(domain)}</code>.`;
+            errBox.style.display = 'flex';
+          } else {
+            errText.textContent = err.friendlyMessage || err.message || 'Ошибка входа через Google';
+            errBox.style.display = 'flex';
+          }
+        }
+      }
+
+      async function handleAuthSubmit(e) {
+        e.preventDefault();
+        const errBox = document.getElementById('auth-error-box');
+        const errText = document.getElementById('auth-error-text');
+        errBox.style.display = 'none';
+
+        const nameInput = document.getElementById('auth-input-name').value.trim();
+        const phone = document.getElementById('auth-input-phone').value.trim();
+        const sms = document.getElementById('auth-input-sms').value.trim();
+        const email = document.getElementById('auth-input-email').value.trim();
+        const password = document.getElementById('auth-input-password').value.trim();
+
+        try {
+          let res, result;
+          if (authMode === 'register') {
+            if (!nameInput) {
+              errText.textContent = 'Введите имя или никнейм';
+              errBox.style.display = 'flex'; return;
+            }
+            if (authMethod === 'email') {
+              if (!email || !email.includes('@') || !password || password.length < 4) {
+                errText.textContent = 'Введите корректную почту и пароль от 4 символов';
+                errBox.style.display = 'flex'; return;
+              }
+            } else {
+              if (!phone || phone.replace(/\D/g, '').length < 10) {
+                errText.textContent = 'Введите корректный номер телефона';
+                errBox.style.display = 'flex'; return;
+              }
+            }
+
+            res = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: nameInput,
+                email: authMethod === 'email' ? email : undefined,
+                phone: authMethod === 'phone' ? phone : undefined,
+                password: authMethod === 'email' ? password : undefined,
+                roleKey: 'client'
+              })
+            });
+          } else {
+            if (authMethod === 'phone') {
+              if (!phone || phone.replace(/\D/g, '').length < 10 || !sms || sms.length < 4) {
+                errText.textContent = 'Введите номер телефона и код из СМС';
+                errBox.style.display = 'flex'; return;
+              }
+              res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, sms })
+              });
+            } else {
+              if (!email || !password) {
+                errText.textContent = 'Введите почту и пароль';
+                errBox.style.display = 'flex'; return;
+              }
+              res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login: email, password })
+              });
+            }
+          }
+
+          result = await res.json();
+          if (result.error) {
+            errText.textContent = result.error;
+            errBox.style.display = 'flex';
+            return;
+          }
+
+          sessionToken = result.token;
+          currentUser = result.user;
+          saveStoredUser(currentUser, sessionToken);
+          closeAuthModal();
+          renderAuthNav();
+          loadServerSettings();
+          showToast((currentLang === 'ru' ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
+        } catch (err) {
+          errText.textContent = 'Сетевая ошибка';
+          errBox.style.display = 'flex';
+        }
+      }
+
+      // Закрытие настроек и авторизации при клике за пределами окон
+      document.getElementById('settings-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeSettingsModal();
+        }
+      });
+      document.getElementById('auth-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeAuthModal();
+        }
+      });
+
+      let toastTimer = null;
+      function showToast(text) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-text').textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+      }
+
+      function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+
+      // АНИМАЦИЯ ШЕСТЕРЁНОК
+      const MODULE = 6, BIG_TEETH = 16, SMALL_TEETH = 12;
+      const BIG_PITCH_R = BIG_TEETH * MODULE / 2, SMALL_PITCH_R = SMALL_TEETH * MODULE / 2;
+      const ADDENDUM = MODULE, DEDENDUM = MODULE;
+      const BIG_ROOT_R = BIG_PITCH_R - DEDENDUM, SMALL_ROOT_R = SMALL_PITCH_R - DEDENDUM;
+      const BIG_HUB_R = 15, SMALL_HUB_R = 11;
+      const CENTER_DIST = BIG_PITCH_R + SMALL_PITCH_R;
+      const BIG_CX = 76, BIG_CY = 76, CONTACT_ANGLE_DEG = 45;
+      const CONTACT_ANGLE_RAD = CONTACT_ANGLE_DEG * Math.PI / 180;
+      const SMALL_CX = BIG_CX + CENTER_DIST * Math.cos(CONTACT_ANGLE_RAD);
+      const SMALL_CY = BIG_CY + CENTER_DIST * Math.sin(CONTACT_ANGLE_RAD);
+      const SMALL_STEP_DEG = 360 / SMALL_TEETH;
+      const BIG_PHASE_DEG = CONTACT_ANGLE_DEG;
+      const SMALL_PHASE_DEG = CONTACT_ANGLE_DEG + 180 - SMALL_STEP_DEG / 2;
+      const GEAR_RATIO = BIG_TEETH / SMALL_TEETH;
+
+      function buildGearPath(cx, cy, teeth, rootR, toothDepth, hubR, phaseDeg) {
+        const phase = phaseDeg * Math.PI / 180, step = (Math.PI * 2) / teeth, half = step / 2;
+        const toothRatio = 0.42, toothHalf = half * toothRatio, gapHalf = half * (1 - toothRatio);
+        const outerR = rootR + toothDepth;
+        let d = '';
+        for (let i = 0; i < teeth; i++) {
+          const angle = i * step + phase;
+          const a1 = angle - toothHalf, a2 = angle + toothHalf;
+          const b1 = angle + half - gapHalf, b2 = angle + half + gapHalf;
+          const p1x = cx + Math.cos(a1) * outerR, p1y = cy + Math.sin(a1) * outerR;
+          const p2x = cx + Math.cos(a2) * outerR, p2y = cy + Math.sin(a2) * outerR;
+          const p3x = cx + Math.cos(b1) * rootR, p3y = cy + Math.sin(b1) * rootR;
+          const p4x = cx + Math.cos(b2) * rootR, p4y = cy + Math.sin(b2) * rootR;
+          if (i === 0) d += `M ${p1x.toFixed(2)} ${p1y.toFixed(2)} `;
+          else d += `L ${p1x.toFixed(2)} ${p1y.toFixed(2)} `;
+          d += `L ${p2x.toFixed(2)} ${p2y.toFixed(2)} `;
+          d += `L ${p3x.toFixed(2)} ${p3y.toFixed(2)} `;
+          d += `L ${p4x.toFixed(2)} ${p4y.toFixed(2)} `;
+        }
+        d += 'Z ';
+        d += `M ${(cx + hubR).toFixed(2)} ${cy.toFixed(2)} A ${hubR} ${hubR} 0 1 0 ${(cx - hubR).toFixed(2)} ${cy.toFixed(2)} A ${hubR} ${hubR} 0 1 0 ${(cx + hubR).toFixed(2)} ${cy.toFixed(2)} Z`;
+        return d;
+      }
+
+      document.getElementById('big-gear-path').setAttribute('d', buildGearPath(BIG_CX, BIG_CY, BIG_TEETH, BIG_ROOT_R, ADDENDUM, BIG_HUB_R, BIG_PHASE_DEG));
+      document.getElementById('small-gear-path').setAttribute('d', buildGearPath(SMALL_CX, SMALL_CY, SMALL_TEETH, SMALL_ROOT_R, ADDENDUM, SMALL_HUB_R, SMALL_PHASE_DEG));
+      document.getElementById('big-gear-inner').setAttribute('cx', BIG_CX);
+      document.getElementById('big-gear-inner').setAttribute('cy', BIG_CY);
+      document.getElementById('big-gear-inner').setAttribute('r', BIG_HUB_R);
+      document.getElementById('small-gear-inner').setAttribute('cx', SMALL_CX);
+      document.getElementById('small-gear-inner').setAttribute('cy', SMALL_CY);
+      document.getElementById('small-gear-inner').setAttribute('r', SMALL_HUB_R);
+
+      (function initGears() {
+        const gearBig = document.getElementById('gear-big');
+        const gearSmall = document.getElementById('gear-small');
+        if (!gearBig || !gearSmall) return;
+        let rotBig = 0, rotSmall = 0, vel = 0, lastY = window.scrollY, lastDir = 1;
+        function tick() {
+          const curY = window.scrollY, delta = curY - lastY;
+          if (Math.abs(delta) > 0.5) lastDir = delta > 0 ? 1 : -1;
+          vel += (Math.abs(delta) - vel) * 0.12;
+          if (vel < 0.05) vel = 0;
+          const rDelta = vel * 0.4 * lastDir;
+          rotBig += rDelta; rotSmall -= rDelta * GEAR_RATIO;
+          gearBig.setAttribute('transform', `rotate(${rotBig.toFixed(3)} ${BIG_CX} ${BIG_CY})`);
+          gearSmall.setAttribute('transform', `rotate(${rotSmall.toFixed(3)} ${SMALL_CX} ${SMALL_CY})`);
+          lastY = curY;
+          requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      })();
+
+      loadServerSettings();
+      checkCurrentAuth();
+    </script>
+  </body>
+</html>

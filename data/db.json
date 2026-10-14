@@ -1,0 +1,54 @@
+{
+  "ipSettings": {
+    "144.31.1.63": {
+      "theme": "dark",
+      "lang": "en",
+      "currency": "RUB"
+    },
+    "127.0.0.1": {
+      "theme": "dark",
+      "lang": "ru",
+      "currency": "RUB"
+    }
+  },
+  "users": [
+    {
+      "id": "user_viP76CNhDJZxaTZGQVYamM5wcp13",
+      "name": "Даня",
+      "username": "donil228",
+      "email": "dsforto4ka@gmail.com",
+      "roleKey": "worker",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocKZSZIeac6dI3-9N5CRggiTWawg7RTmAxiV7BF2RInYkoNsOQ=s96-c",
+      "about": "",
+      "city": "",
+      "skills": "",
+      "balance": 0,
+      "settings": {
+        "theme": "dark",
+        "lang": "ru",
+        "currency": "RUB"
+      },
+      "createdAt": "2026-10-14T07:18:09.047Z",
+      "telegram": ""
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task_1791962446329u0x",
+      "title": "Довыд пентюх",
+      "description": "ну довыд лох педальный конкретно",
+      "budget": 650,
+      "currency": "RUB",
+      "category": "тексты",
+      "authorId": "user_viP76CNhDJZxaTZGQVYamM5wcp13",
+      "authorName": "Даня",
+      "authorContact": "dsforto4ka@gmail.com",
+      "createdAt": "2026-10-14T07:20:46.329Z",
+      "status": "open"
+    }
+  ],
+  "applications": [],
+  "sessions": {
+    "token_5iuc307x51bmv7t0tjk": "user_viP76CNhDJZxaTZGQVYamM5wcp13"
+  }
+}
