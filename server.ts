@@ -115,6 +115,40 @@ function getClientIp(req: express.Request): string {
   return req.socket.remoteAddress || '127.0.0.1';
 }
 
+// Транслитерация кириллицы в латиницу для генерации юзернеймов
+export function toLatinUsername(raw: string): string {
+  const translitMap: Record<string, string> = {
+    а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y',
+    к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f',
+    х: 'kh', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'shch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya'
+  };
+  const latinized = String(raw || '')
+    .toLowerCase()
+    .split('')
+    .map((ch) => translitMap[ch] || ch)
+    .join('');
+  const clean = latinized.replace(/[^a-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 20);
+  return clean || 'user';
+}
+
+// Валидатор: юзернейм исключительно на латинице (без кириллицы)
+export function isValidLatinUsername(username: string): boolean {
+  return /^[a-zA-Z0-9_.-]{3,30}$/.test(username);
+}
+
+// Форматирование имени человека (например: "Александр Попов" -> "Александр П.")
+export function formatShortName(fullName?: string): string {
+  if (!fullName) return '';
+  const clean = String(fullName).trim().replace(/^@/, '');
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    const first = parts[0];
+    const secondInitial = parts[1].charAt(0).toUpperCase();
+    return `${first} ${secondInitial}.`;
+  }
+  return clean;
+}
+
 function getSessionUser(req: express.Request, db: Database): User | null {
   const authHeader = req.headers.authorization;
   let token = '';
@@ -264,14 +298,10 @@ async function startServer() {
     if (!user) {
       // Регистрируем нового реального пользователя
       const cleanName = displayName || email.split('@')[0];
-      const baseUsername = cleanName
-        .toLowerCase()
-        .replace(/[^a-z0-9а-яё]+/gi, '_')
-        .replace(/^_+|_+$/g, '')
-        .slice(0, 20) || 'user';
+      const baseUsername = toLatinUsername(cleanName);
       let username = baseUsername;
       let counter = 1;
-      while (db.users.some((u) => u.username === username)) {
+      while (db.users.some((u) => u.username.toLowerCase() === username.toLowerCase())) {
         username = `${baseUsername}_${counter++}`;
       }
 
@@ -313,10 +343,31 @@ async function startServer() {
   // Регистрация по почте / телефону
   app.post('/api/auth/register', (req, res) => {
     const db = readDb();
-    const { name, email, phone, password, roleKey } = req.body;
+    const { name, username: passedUsername, email, phone, password, roleKey } = req.body;
 
     if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Имя или никнейм обязательны' });
+      return res.status(400).json({ error: 'Имя обязательно' });
+    }
+
+    let username = '';
+    if (passedUsername && typeof passedUsername === 'string') {
+      const cleanU = passedUsername.trim().replace(/^@/, '');
+      if (!isValidLatinUsername(cleanU)) {
+        return res.status(400).json({
+          error: 'Юзернейм должен быть исключительно на латинице (только латинские буквы a-z, цифры и _)'
+        });
+      }
+      if (db.users.some((u) => u.username.toLowerCase() === cleanU.toLowerCase())) {
+        return res.status(400).json({ error: 'Этот юзернейм уже занят' });
+      }
+      username = cleanU;
+    } else {
+      const baseUsername = toLatinUsername(name);
+      username = baseUsername;
+      let counter = 1;
+      while (db.users.some((u) => u.username.toLowerCase() === username.toLowerCase())) {
+        username = `${baseUsername}_${counter++}`;
+      }
     }
 
     if (email && db.users.some((u) => u.email?.toLowerCase() === email.toLowerCase())) {
@@ -329,18 +380,6 @@ async function startServer() {
 
     const ip = getClientIp(req);
     const ipSetting = db.ipSettings[ip] || { theme: 'dark', lang: 'ru', currency: 'RUB' };
-
-    const baseUsername = name
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9а-яё]+/gi, '_')
-      .replace(/^_+|_+$/g, '')
-      .slice(0, 20) || 'user';
-    let username = baseUsername;
-    let counter = 1;
-    while (db.users.some((u) => u.username === username)) {
-      username = `${baseUsername}_${counter++}`;
-    }
 
     const user: User = {
       id: 'user_' + Date.now() + Math.random().toString(36).substring(2, 6),
@@ -474,9 +513,13 @@ async function startServer() {
       );
     }
 
-    // Свежие первыми
+    // Свежие первыми и форматирование имени автора ("Александр П.")
     filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    res.json({ tasks: filtered });
+    const formattedTasks = filtered.map((t) => ({
+      ...t,
+      authorDisplayName: formatShortName(t.authorName) || t.authorName || 'Пользователь',
+    }));
+    res.json({ tasks: formattedTasks });
   });
 
   app.post('/api/tasks', (req, res) => {
@@ -503,7 +546,7 @@ async function startServer() {
       currency: ['USD', 'EUR', 'BYN'].includes(currency) ? currency : 'RUB',
       category: category || 'дизайн',
       authorId: user.id,
-      authorName: user.name,
+      authorName: formatShortName(user.name) || user.name,
       authorContact: user.telegram || user.email || user.phone || `@${user.username}`,
       createdAt: new Date().toISOString(),
       status: 'open',
@@ -511,7 +554,7 @@ async function startServer() {
 
     db.tasks.unshift(task);
     writeDb(db);
-    res.json({ success: true, task });
+    res.json({ success: true, task: { ...task, authorDisplayName: task.authorName } });
   });
 
   // Отклик на задание
@@ -582,6 +625,28 @@ async function startServer() {
     });
   });
 
+  // Загрузка / сохранение аватара (сжатый base64 или URL)
+  app.post('/api/user/avatar', (req, res) => {
+    const db = readDb();
+    const user = getSessionUser(req, db);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Необходима авторизация' });
+    }
+
+    const { avatar } = req.body;
+    if (!avatar || typeof avatar !== 'string') {
+      return res.status(400).json({ error: 'Изображение не передано' });
+    }
+
+    user.avatar = avatar;
+    writeDb(db);
+
+    const safeUser = { ...user };
+    delete safeUser.password;
+    res.json({ success: true, user: safeUser });
+  });
+
   // Обновление профиля
   app.post('/api/user/profile', (req, res) => {
     const db = readDb();
@@ -596,7 +661,14 @@ async function startServer() {
     if (displayName) user.name = String(displayName).trim();
     if (username) {
       const cleanU = String(username).replace(/^@/, '').trim();
-      const duplicate = db.users.find((u) => u.username === cleanU && u.id !== user.id);
+      if (!isValidLatinUsername(cleanU)) {
+        return res.status(400).json({
+          error: 'Юзернейм должен быть исключительно на латинице (только буквы a-z, цифры, _, .)'
+        });
+      }
+      const duplicate = db.users.find(
+        (u) => u.username.toLowerCase() === cleanU.toLowerCase() && u.id !== user.id
+      );
       if (duplicate) {
         return res.status(400).json({ error: 'Этот юзернейм уже занят' });
       }

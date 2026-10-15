@@ -158,11 +158,13 @@
       .vw-nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
       .vw-nav-name { overflow: hidden; text-overflow: ellipsis; }
 
+      .btn-settings-small,
       .btn-logout-small {
         background-color: transparent; border: 1px solid var(--border); color: var(--text-muted);
         padding: 7px 10px; border-radius: 9px; font-size: 13px; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;
       }
+      .btn-settings-small:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-soft); }
       .btn-logout-small:hover { border-color: var(--danger); color: var(--danger); }
 
       /* ОСНОВНОЙ КОНТЕНТ */
@@ -428,7 +430,7 @@
             <li><a href="index.html#tasks" class="nav-link" data-i18n="nav.tasks">Задания</a></li>
             <li><a href="index.html#how-it-works" class="nav-link" data-i18n="nav.how">Как это работает</a></li>
           </ul>
-          <button type="button" class="btn-logout-small" onclick="openSettingsModal()" title="Настройки" style="margin-right: 2px;">
+          <button type="button" class="btn-settings-small" onclick="openSettingsModal()" title="Настройки" data-i18n-title="settings.title" aria-label="Настройки" style="margin-right: 2px;">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -500,7 +502,7 @@
             <!-- НАЗВАНИЕ -->
             <div class="form-section">
               <label class="form-label" for="task-title-input"><span data-i18n="post.titleLabel">Название задания</span> <span>*</span></label>
-              <div class="form-hint">Коротко и ясно сформулируйте суть задачи</div>
+              <div class="form-hint" data-i18n="post.titleHint">Коротко и ясно сформулируйте суть задачи</div>
               <input
                 type="text"
                 id="task-title-input"
@@ -515,7 +517,7 @@
             <!-- БЮДЖЕТ -->
             <div class="form-section">
               <label class="form-label" for="task-budget-input"><span data-i18n="post.budgetLabel">Бюджет вознаграждения</span> <span>*</span></label>
-              <div class="form-hint">Укажите сумму, которую исполнитель получит за выполненную работу</div>
+              <div class="form-hint" data-i18n="post.budgetHint">Укажите сумму, которую исполнитель получит за выполненную работу</div>
               <div class="budget-row">
                 <div class="budget-input-wrapper">
                   <input
@@ -540,7 +542,7 @@
             <!-- ОПИСАНИЕ -->
             <div class="form-section">
               <label class="form-label" for="task-desc-input"><span data-i18n="post.descLabel">Подробное описание</span> <span>*</span></label>
-              <div class="form-hint">Опишите требования, формат сдачи работы, дедлайн и что вы предоставите</div>
+              <div class="form-hint" data-i18n="post.descHint">Опишите требования, формат сдачи работы, дедлайн и что вы предоставите</div>
               <textarea
                 id="task-desc-input"
                 class="form-control"
@@ -585,7 +587,7 @@
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
-              <span>Опубликовать задание</span>
+              <span data-i18n="post.submit">Опубликовать задание</span>
             </button>
           </form>
         </div>
@@ -593,7 +595,7 @@
     </main>
 
     <!-- МОДАЛКА НАСТРОЕК (ПО IP И ПРОФИЛЮ) -->
-    <div class="modal-overlay" id="settings-modal">
+    <div class="modal-overlay" id="settings-modal" onclick="if(event.target===this)closeSettingsModal()">
       <div class="modal-box">
         <button class="modal-close-btn" onclick="closeSettingsModal()" aria-label="Закрыть">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -683,7 +685,7 @@
     </div>
 
     <!-- МОДАЛКА АВТОРИЗАЦИИ (РЕАЛЬНЫЕ АККАУНТЫ) -->
-    <div class="modal-overlay" id="auth-modal">
+    <div class="modal-overlay" id="auth-modal" onclick="if(event.target===this)closeAuthModal()">
       <div class="modal-box">
         <button class="modal-close-btn" onclick="closeAuthModal()" aria-label="Закрыть">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -692,12 +694,12 @@
           </svg>
         </button>
 
-        <h3 class="modal-title" id="auth-modal-title">Вход в Vibe Working</h3>
-        <p class="modal-subtitle" id="auth-modal-subtitle">Войдите или зарегистрируйтесь, чтобы опубликовать задание</p>
+        <h3 class="modal-title" id="auth-modal-title" data-i18n="auth.titleLogin">Вход в Vibe Working</h3>
+        <p class="modal-subtitle" id="auth-modal-subtitle" data-i18n="auth.subPost">Войдите или зарегистрируйтесь, чтобы опубликовать задание</p>
 
         <div class="auth-mode-switch">
-          <button type="button" class="auth-mode-btn active" id="btn-mode-login" onclick="setAuthMode('login')">Войти</button>
-          <button type="button" class="auth-mode-btn" id="btn-mode-register" onclick="setAuthMode('register')">Регистрация</button>
+          <button type="button" class="auth-mode-btn active" id="btn-mode-login" onclick="setAuthMode('login')" data-i18n="auth.login">Войти</button>
+          <button type="button" class="auth-mode-btn" id="btn-mode-register" onclick="setAuthMode('register')" data-i18n="auth.register">Регистрация</button>
         </div>
 
         <button type="button" class="btn-google-auth" onclick="handleGoogleOAuthLogin()">
@@ -707,14 +709,14 @@
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
           </svg>
-          <span>Продолжить через Google</span>
+          <span data-i18n="auth.google">Продолжить через Google</span>
         </button>
 
-        <div class="divider-text">или через контакты</div>
+        <div class="divider-text" data-i18n="auth.orContacts">или через контакты</div>
 
         <div class="auth-method-tabs">
-          <button type="button" class="auth-method-tab active" id="tab-method-phone" onclick="setAuthMethod('phone')">📱 По телефону</button>
-          <button type="button" class="auth-method-tab" id="tab-method-email" onclick="setAuthMethod('email')">✉️ По почте</button>
+          <button type="button" class="auth-method-tab active" id="tab-method-phone" onclick="setAuthMethod('phone')">📱 <span data-i18n="auth.byPhone">По телефону</span></button>
+          <button type="button" class="auth-method-tab" id="tab-method-email" onclick="setAuthMethod('email')">✉️ <span data-i18n="auth.byEmail">По почте</span></button>
         </div>
 
         <div class="form-error" id="auth-error-box">
@@ -726,34 +728,40 @@
 
         <form id="auth-main-form" onsubmit="handleAuthSubmit(event)">
           <div class="form-section" id="group-auth-name" style="display: none; margin-bottom: 16px;">
-            <label class="form-label" for="auth-input-name">Ваше имя или никнейм</label>
-            <input type="text" class="form-control" id="auth-input-name" placeholder="Например: Денис" />
+            <label class="form-label" for="auth-input-name" data-i18n="auth.nameLabel">Ваше имя (например: Александр Попов)</label>
+            <input type="text" class="form-control" id="auth-input-name" placeholder="Например: Александр Попов" data-i18n-placeholder="auth.namePlaceholder" />
+          </div>
+
+          <div class="form-section" id="group-auth-username" style="display: none; margin-bottom: 16px;">
+            <label class="form-label" for="auth-input-username" data-i18n="auth.usernameLabel">Юзернейм (только латиница)</label>
+            <input type="text" class="form-control" id="auth-input-username" pattern="[a-zA-Z0-9_.-]+" placeholder="alex_popov" data-i18n-placeholder="auth.usernamePlaceholder" oninput="this.value = this.value.replace(/[^a-zA-Z0-9_.-]/g, '');" />
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" data-i18n="auth.usernameHint">Только латинские буквы a-z, цифры и знаки _ . -</div>
           </div>
 
           <div id="fields-phone-block">
             <div class="form-section" style="margin-bottom: 16px;">
-              <label class="form-label" for="auth-input-phone">Номер телефона</label>
+              <label class="form-label" for="auth-input-phone" data-i18n="auth.phoneLabel">Номер телефона</label>
               <input type="tel" class="form-control" id="auth-input-phone" placeholder="+7 (999) 000-00-00" />
             </div>
             <div class="form-section" style="margin-bottom: 16px;">
-              <label class="form-label" for="auth-input-sms">Код из СМС</label>
-              <input type="text" class="form-control" id="auth-input-sms" placeholder="Введите код" maxlength="6" />
+              <label class="form-label" for="auth-input-sms" data-i18n="auth.smsLabel">Код из СМС</label>
+              <input type="text" class="form-control" id="auth-input-sms" placeholder="Введите код" data-i18n-placeholder="auth.smsPlaceholder" maxlength="6" />
             </div>
           </div>
 
           <div id="fields-email-block" style="display: none;">
             <div class="form-section" style="margin-bottom: 16px;">
-              <label class="form-label" for="auth-input-email">Электронная почта</label>
-              <input type="email" class="form-control" id="auth-input-email" placeholder="example@mail.ru" />
+              <label class="form-label" for="auth-input-email" data-i18n="auth.emailLabel">Электронная почта</label>
+              <input type="email" class="form-control" id="auth-input-email" placeholder="example@mail.ru" data-i18n-placeholder="auth.emailPlaceholder" />
             </div>
             <div class="form-section" style="margin-bottom: 16px;">
-              <label class="form-label" for="auth-input-password">Пароль</label>
-              <input type="password" class="form-control" id="auth-input-password" placeholder="Придумайте пароль" />
+              <label class="form-label" for="auth-input-password" data-i18n="auth.passLabel">Пароль</label>
+              <input type="password" class="form-control" id="auth-input-password" placeholder="Придумайте пароль" data-i18n-placeholder="auth.passPlaceholder" />
             </div>
           </div>
 
           <button type="submit" class="btn-publish" style="padding: 13px;" id="auth-submit-btn">
-            <span>Войти в аккаунт</span>
+            <span data-i18n="auth.submitLogin">Войти в аккаунт</span>
           </button>
         </form>
       </div>
@@ -1228,11 +1236,18 @@
       function setAuthMode(mode) {
         authMode = mode;
         const isReg = mode === 'register';
+        const isRu = currentLang === 'ru';
         document.getElementById('btn-mode-login').classList.toggle('active', !isReg);
         document.getElementById('btn-mode-register').classList.toggle('active', isReg);
         document.getElementById('group-auth-name').style.display = isReg ? 'block' : 'none';
-        document.getElementById('auth-modal-title').textContent = isReg ? 'Регистрация в Vibe Working' : 'Вход в Vibe Working';
-        document.getElementById('auth-submit-btn').querySelector('span').textContent = isReg ? 'Зарегистрироваться' : 'Войти в аккаунт';
+        const groupUsername = document.getElementById('group-auth-username');
+        if (groupUsername) groupUsername.style.display = isReg ? 'block' : 'none';
+        document.getElementById('auth-modal-title').textContent = isReg
+          ? (isRu ? 'Регистрация в Vibe Working' : 'Sign up for Vibe Working')
+          : (isRu ? 'Вход в Vibe Working' : 'Sign in to Vibe Working');
+        document.getElementById('auth-submit-btn').querySelector('span').textContent = isReg
+          ? (isRu ? 'Зарегистрироваться' : 'Create account')
+          : (isRu ? 'Войти в аккаунт' : 'Sign in');
         document.getElementById('auth-error-box').style.display = 'none';
       }
 
@@ -1249,15 +1264,16 @@
         const errBox = document.getElementById('auth-error-box');
         const errText = document.getElementById('auth-error-text');
         errBox.style.display = 'none';
+        const isRu = currentLang === 'ru';
 
         if (typeof window.signInWithGoogleOAuth !== 'function') {
-          errText.textContent = 'Модуль Google OAuth инициализируется... Попробуйте через секунду.';
+          errText.textContent = isRu ? 'Модуль Google OAuth инициализируется... Попробуйте через секунду.' : 'Google OAuth is initializing. Please retry in a second.';
           errBox.style.display = 'flex';
           return;
         }
 
         try {
-          showToast('Открываем окно Google...');
+          showToast(isRu ? 'Открываем окно Google...' : 'Opening Google window...');
           const googleData = await window.signInWithGoogleOAuth();
 
           let sessionUser = null;
@@ -1285,7 +1301,7 @@
             sessionToken = 'token_' + Math.random().toString(36).substring(2);
             sessionUser = {
               id: 'user_' + googleData.uid,
-              name: googleData.displayName || 'Пользователь Google',
+              name: googleData.displayName || (isRu ? 'Пользователь Google' : 'Google User'),
               username: (googleData.displayName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 15),
               email: googleData.email,
               avatar: googleData.photoURL,
@@ -1301,16 +1317,16 @@
           closeAuthModal();
           renderAuthNav();
           loadServerSettings();
-          showToast((currentLang === 'ru' ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
+          showToast((isRu ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
         } catch (err) {
           if (err && err.code === 'auth/popup-closed-by-user') {
-            showToast('Вход через Google отменён');
+            showToast(isRu ? 'Вход через Google отменён' : 'Google sign-in was canceled');
           } else if (err && err.code === 'auth/unauthorized-domain') {
             const domain = window.location.hostname;
-            errText.innerHTML = `<strong>Домен ${escapeHtml(domain)} не разрешён в Firebase!</strong><br>В <a href="https://console.firebase.google.com/project/gen-lang-client-0591838063/authentication/settings" target="_blank" style="color:var(--accent);text-decoration:underline;">Firebase Console</a> &rarr; Authentication &rarr; Settings &rarr; Authorized domains добавьте <code>${escapeHtml(domain)}</code>.`;
+            errText.innerHTML = `<strong>Domain ${escapeHtml(domain)} is not authorized in Firebase!</strong>`;
             errBox.style.display = 'flex';
           } else {
-            errText.textContent = err.friendlyMessage || err.message || 'Ошибка входа через Google';
+            errText.textContent = err.friendlyMessage || err.message || (isRu ? 'Ошибка входа через Google' : 'Google sign-in error');
             errBox.style.display = 'flex';
           }
         }
@@ -1321,8 +1337,10 @@
         const errBox = document.getElementById('auth-error-box');
         const errText = document.getElementById('auth-error-text');
         errBox.style.display = 'none';
+        const isRu = currentLang === 'ru';
 
         const nameInput = document.getElementById('auth-input-name').value.trim();
+        const usernameInput = (document.getElementById('auth-input-username')?.value || '').trim();
         const phone = document.getElementById('auth-input-phone').value.trim();
         const sms = document.getElementById('auth-input-sms').value.trim();
         const email = document.getElementById('auth-input-email').value.trim();
@@ -1332,17 +1350,28 @@
           let res, result;
           if (authMode === 'register') {
             if (!nameInput) {
-              errText.textContent = 'Введите имя или никнейм';
+              errText.textContent = isRu ? 'Введите имя или никнейм' : 'Enter your name';
               errBox.style.display = 'flex'; return;
             }
+
+            if (usernameInput) {
+              if (!/^[a-zA-Z0-9_.-]+$/.test(usernameInput)) {
+                errText.textContent = isRu
+                  ? 'Юзернейм должен быть исключительно на латинице (только латинские буквы a-z, цифры и _ . -)'
+                  : 'Username can only contain Latin letters, numbers, and _ . -';
+                errBox.style.display = 'flex';
+                return;
+              }
+            }
+
             if (authMethod === 'email') {
               if (!email || !email.includes('@') || !password || password.length < 4) {
-                errText.textContent = 'Введите корректную почту и пароль от 4 символов';
+                errText.textContent = isRu ? 'Введите корректную почту и пароль от 4 символов' : 'Enter valid email and password (4+ chars)';
                 errBox.style.display = 'flex'; return;
               }
             } else {
               if (!phone || phone.replace(/\D/g, '').length < 10) {
-                errText.textContent = 'Введите корректный номер телефона';
+                errText.textContent = isRu ? 'Введите корректный номер телефона' : 'Enter a valid phone number';
                 errBox.style.display = 'flex'; return;
               }
             }
@@ -1352,6 +1381,7 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 name: nameInput,
+                username: usernameInput || undefined,
                 email: authMethod === 'email' ? email : undefined,
                 phone: authMethod === 'phone' ? phone : undefined,
                 password: authMethod === 'email' ? password : undefined,
@@ -1361,7 +1391,7 @@
           } else {
             if (authMethod === 'phone') {
               if (!phone || phone.replace(/\D/g, '').length < 10 || !sms || sms.length < 4) {
-                errText.textContent = 'Введите номер телефона и код из СМС';
+                errText.textContent = isRu ? 'Введите номер телефона и код из СМС' : 'Enter phone number and SMS code';
                 errBox.style.display = 'flex'; return;
               }
               res = await fetch('/api/auth/login', {
@@ -1371,7 +1401,7 @@
               });
             } else {
               if (!email || !password) {
-                errText.textContent = 'Введите почту и пароль';
+                errText.textContent = isRu ? 'Введите почту и пароль' : 'Enter email and password';
                 errBox.style.display = 'flex'; return;
               }
               res = await fetch('/api/auth/login', {
@@ -1395,9 +1425,9 @@
           closeAuthModal();
           renderAuthNav();
           loadServerSettings();
-          showToast((currentLang === 'ru' ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
+          showToast((isRu ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
         } catch (err) {
-          errText.textContent = 'Сетевая ошибка';
+          errText.textContent = isRu ? 'Сетевая ошибка' : 'Network error';
           errBox.style.display = 'flex';
         }
       }

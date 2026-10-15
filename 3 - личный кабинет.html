@@ -153,6 +153,16 @@
       }
       .btn-auth-open:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 14px var(--accent-soft); }
 
+      /* ИКОНКА НАСТРОЕК В ШАПКЕ — В ТОЧНОСТИ КАК НА СТРАНИЦЕ "РАЗМЕСТИТЬ ЗАКАЗ" */
+      .btn-settings-small,
+      .btn-logout-small {
+        background-color: transparent; border: 1px solid var(--border); color: var(--text-muted);
+        padding: 7px 10px; border-radius: 9px; font-size: 13px; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;
+      }
+      .btn-settings-small:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-soft); }
+      .btn-logout-small:hover { border-color: var(--danger); color: var(--danger); }
+
       .page-content { padding: 40px 0 80px; }
 
       /* ПРИГЛАШЕНИЕ ВОЙТИ (ДЛЯ НЕАВТОРИЗОВАННЫХ) */
@@ -174,13 +184,182 @@
       }
       .profile-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
       .profile-user-info { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-      .profile-avatar {
-        width: 80px; height: 80px; border-radius: 50%;
-        background-color: var(--accent); color: var(--accent-on);
-        font-size: 32px; font-weight: 800; display: flex; align-items: center; justify-content: center;
-        overflow: hidden; border: 3px solid var(--border); flex-shrink: 0;
+
+      /* СИСТЕМА АВАТАРОК: НАВЕДЕНИЕ 50% ЗАТЕМНЕНИЕ + БЕЛЫЙ НЕЗАТЕМНЯЮЩИЙСЯ КАРАНДАШ */
+      .profile-avatar-wrap {
+        position: relative;
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        border: 3px solid var(--border);
+        background-color: var(--accent);
+        overflow: hidden;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+        user-select: none;
       }
-      .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .profile-avatar-wrap:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px var(--accent-soft);
+        transform: scale(1.02);
+      }
+      .profile-avatar-img-box {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        font-weight: 800;
+        color: var(--accent-on);
+        transition: filter 0.25s ease, opacity 0.25s ease;
+      }
+      .profile-avatar-img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      /* Фото затемняется на 50% */
+      .profile-avatar-wrap:hover .profile-avatar-img-box {
+        filter: brightness(0.5);
+        -webkit-filter: brightness(0.5);
+      }
+      /* Одноцветный карандаш в центре, не затемняется */
+      .profile-avatar-pencil-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+        z-index: 5;
+      }
+      .profile-avatar-wrap:hover .profile-avatar-pencil-overlay {
+        opacity: 1;
+      }
+      .profile-avatar-pencil-icon {
+        color: #ffffff;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+        transition: transform 0.2s ease;
+      }
+      .profile-avatar-wrap:hover .profile-avatar-pencil-icon {
+        transform: scale(1.08);
+      }
+
+      /* МОДАЛКА ОБРЕЗКИ ИЗОБРАЖЕНИЯ */
+      .crop-modal-dialog {
+        max-width: 440px;
+        width: 100%;
+        background-color: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 26px;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+      .crop-viewport-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0 16px;
+      }
+      .crop-viewport {
+        position: relative;
+        width: 300px;
+        height: 300px;
+        border-radius: 16px;
+        background-color: var(--bg-deep);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+      }
+      .crop-viewport:active {
+        cursor: grabbing;
+      }
+      .crop-viewport canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .crop-circular-guide {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: 50%;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.62);
+        border: 2px dashed rgba(255, 255, 255, 0.9);
+      }
+      .crop-zoom-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background-color: var(--bg-deep);
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        margin-bottom: 22px;
+      }
+      .crop-zoom-bar span {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+      .crop-zoom-bar input[type="range"] {
+        flex: 1;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .crop-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .btn-crop-cancel {
+        flex: 1;
+        padding: 12px 18px;
+        background-color: var(--bg-deep);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+      .btn-crop-cancel:hover {
+        border-color: var(--text-muted);
+      }
+      .btn-crop-save {
+        flex: 1;
+        padding: 12px 18px;
+        background-color: var(--accent);
+        border: 1px solid var(--accent);
+        color: var(--accent-on);
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .btn-crop-save:hover {
+        box-shadow: 0 0 20px var(--accent-border);
+        transform: translateY(-1px);
+      }
       .profile-name { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
       .profile-handle { font-size: 15px; color: var(--text-muted); margin-bottom: 8px; }
       .profile-role-badge {
@@ -405,7 +584,7 @@
             <li><a href="index.html#how-it-works" class="nav-link" data-i18n="nav.how">Как это работает</a></li>
             <li><a href="2 - объявление.html" class="nav-post-btn" data-i18n="nav.post">Разместить заказ</a></li>
           </ul>
-          <button type="button" class="btn-logout-small" onclick="openSettingsModal()" title="Настройки" style="margin-right: 2px;">
+          <button type="button" class="btn-settings-small" onclick="openSettingsModal()" title="Настройки" data-i18n-title="settings.title" aria-label="Настройки" style="margin-right: 2px;">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -444,7 +623,15 @@
           <div class="profile-card">
             <div class="profile-top">
               <div class="profile-user-info">
-                <div class="profile-avatar" id="cab-avatar">U</div>
+                <div class="profile-avatar-wrap" id="cab-avatar-wrap" onclick="triggerAvatarFileInput()" title="Изменить фото профиля" data-i18n-title="cab.changePhoto" aria-label="Изменить фото профиля">
+                  <div class="profile-avatar-img-box" id="cab-avatar">U</div>
+                  <div class="profile-avatar-pencil-overlay">
+                    <svg class="profile-avatar-pencil-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                    </svg>
+                  </div>
+                  <input type="file" id="avatar-file-input" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;" onchange="handleAvatarFileSelected(event)" />
+                </div>
                 <div>
                   <h1 class="profile-name" id="cab-name">Имя пользователя</h1>
                   <div class="profile-handle" id="cab-username">@username</div>
@@ -490,39 +677,39 @@
           <div class="stats-grid">
             <div class="stat-card">
               <div>
-                <div class="stat-label">Текущий баланс</div>
+                <div class="stat-label" data-i18n="cab.balance">Текущий баланс</div>
                 <div class="stat-value accent" id="cab-balance">0 ₽</div>
-                <div class="stat-sub">Выплаты на карту или СБП</div>
+                <div class="stat-sub" data-i18n="cab.balanceSub">Выплаты на карту или СБП</div>
               </div>
               <div class="balance-buttons">
-                <button type="button" class="btn-balance" onclick="openBalanceModal('deposit')">+ Пополнить</button>
-                <button type="button" class="btn-balance" onclick="openBalanceModal('withdraw')">Вывести</button>
+                <button type="button" class="btn-balance" onclick="openBalanceModal('deposit')" data-i18n="cab.topUp">+ Пополнить</button>
+                <button type="button" class="btn-balance" onclick="openBalanceModal('withdraw')" data-i18n="cab.withdraw">Вывести</button>
               </div>
             </div>
 
             <div class="stat-card">
               <div>
-                <div class="stat-label">Размещено заказов</div>
+                <div class="stat-label" data-i18n="cab.statPublished">Размещено заказов</div>
                 <div class="stat-value" id="cab-orders-count">0</div>
-                <div class="stat-sub">Заданий от вас</div>
+                <div class="stat-sub" data-i18n="cab.statPublishedSub">Заданий от вас</div>
               </div>
-              <a href="2 - объявление.html" class="btn-balance" style="margin-top: 12px; text-decoration: none;">+ Новый заказ</a>
+              <a href="2 - объявление.html" class="btn-balance" style="margin-top: 12px; text-decoration: none;" data-i18n="cab.btnNewOrder">+ Новый заказ</a>
             </div>
 
             <div class="stat-card">
               <div>
-                <div class="stat-label">Мои работы и отклики</div>
+                <div class="stat-label" data-i18n="cab.statWorks">Мои работы и отклики</div>
                 <div class="stat-value" id="cab-works-count">0</div>
-                <div class="stat-sub">Взято заданий</div>
+                <div class="stat-sub" data-i18n="cab.statWorksSub">Взято заданий</div>
               </div>
-              <a href="index.html#tasks" class="btn-balance" style="margin-top: 12px; text-decoration: none;">Найти работу</a>
+              <a href="index.html#tasks" class="btn-balance" style="margin-top: 12px; text-decoration: none;" data-i18n="cab.btnFindWork">Найти работу</a>
             </div>
 
             <div class="stat-card">
               <div>
-                <div class="stat-label">Статус аккаунта</div>
-                <div class="stat-value" style="font-size: 20px; color: var(--accent);">Активен</div>
-                <div class="stat-sub" id="cab-device-status">Устройство привязано</div>
+                <div class="stat-label" data-i18n="cab.statRating">Рейтинг исполнителя</div>
+                <div class="stat-value" style="font-size: 20px; color: var(--accent);">5.0 ★</div>
+                <div class="stat-sub" data-i18n="cab.statRatingSub">На основе отзывов</div>
               </div>
             </div>
           </div>
@@ -530,10 +717,10 @@
           <!-- ВКЛАДКИ КАБИНЕТА -->
           <div class="cabinet-tabs">
             <button type="button" class="cab-tab active" id="tab-btn-orders" onclick="switchCabinetTab('orders')">
-              Мои заказы <span class="cab-tab-badge" id="badge-orders">0</span>
+              <span data-i18n="cab.tabOrders">Мои заказы</span> <span class="cab-tab-badge" id="badge-orders">0</span>
             </button>
             <button type="button" class="cab-tab" id="tab-btn-works" onclick="switchCabinetTab('works')">
-              Мои отклики и работы <span class="cab-tab-badge" id="badge-works">0</span>
+              <span data-i18n="cab.tabWorks">Мои отклики и работы</span> <span class="cab-tab-badge" id="badge-works">0</span>
             </button>
           </div>
 
@@ -560,31 +747,32 @@
           </svg>
         </button>
 
-        <h3 class="modal-title">Редактировать профиль</h3>
-        <p class="modal-subtitle">Информация видна другим пользователям при откликах и заказах</p>
+        <h3 class="modal-title" data-i18n="cab.editModalTitle">Редактировать профиль</h3>
+        <p class="modal-subtitle" data-i18n="cab.editModalSub">Информация видна другим пользователям при откликах и заказах</p>
 
         <form onsubmit="handleSaveProfile(event)">
           <div class="form-section">
-            <label class="form-label" for="edit-name">Отображаемое имя</label>
+            <label class="form-label" for="edit-name" data-i18n="cab.nameLabel">Отображаемое имя</label>
             <input type="text" class="form-control" id="edit-name" required />
           </div>
 
           <div class="form-section">
-            <label class="form-label" for="edit-username">Юзернейм (@никнейм)</label>
-            <input type="text" class="form-control" id="edit-username" required />
+            <label class="form-label" for="edit-username" data-i18n="cab.usernameLabel">Юзернейм (только латиница)</label>
+            <input type="text" class="form-control" id="edit-username" required pattern="[a-zA-Z0-9_.-]+" placeholder="username" oninput="this.value = this.value.replace(/[^a-zA-Z0-9_.-]/g, '');" />
+            <small style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 4px;" data-i18n="cab.usernameLatinHint">Только латинские буквы (a-z, 0-9, _)</small>
           </div>
 
           <div class="form-section">
-            <label class="form-label" for="edit-telegram">Telegram для связи</label>
+            <label class="form-label" for="edit-telegram" data-i18n="cab.telegramLabel">Telegram для связи</label>
             <input type="text" class="form-control" id="edit-telegram" placeholder="@username" />
           </div>
 
           <div class="form-section">
-            <label class="form-label" for="edit-about">О себе / навыки</label>
-            <textarea class="form-control" id="edit-about" placeholder="Расскажите, чем занимаетесь, какие программы знаете..."></textarea>
+            <label class="form-label" for="edit-about" data-i18n="cab.aboutLabel">О себе / навыки</label>
+            <textarea class="form-control" id="edit-about" placeholder="Расскажите, чем занимаетесь, какие программы знаете..." data-i18n-placeholder="cab.aboutPlaceholder"></textarea>
           </div>
 
-          <button type="submit" class="btn-submit">Сохранить изменения</button>
+          <button type="submit" class="btn-submit" data-i18n="cab.saveChanges">Сохранить изменения</button>
         </form>
       </div>
     </div>
@@ -599,17 +787,59 @@
           </svg>
         </button>
 
-        <h3 class="modal-title" id="balance-modal-title">Пополнение баланса</h3>
-        <p class="modal-subtitle" id="balance-modal-subtitle">Без комиссии через СБП или банковскую карту</p>
+        <h3 class="modal-title" id="balance-modal-title" data-i18n="cab.balanceModalDeposit">Пополнение баланса</h3>
+        <p class="modal-subtitle" id="balance-modal-subtitle" data-i18n="cab.balanceModalSub">Без комиссии через СБП или банковскую карту</p>
 
         <form onsubmit="handleBalanceSubmit(event)">
           <div class="form-section">
-            <label class="form-label" for="balance-amount-input">Сумма в рублях (₽)</label>
+            <label class="form-label" for="balance-amount-input" data-i18n="cab.amountLabel">Сумма в рублях (₽)</label>
             <input type="number" class="form-control" id="balance-amount-input" min="50" step="50" placeholder="500" required />
           </div>
 
-          <button type="submit" class="btn-submit" id="balance-modal-btn">Подтвердить</button>
+          <button type="submit" class="btn-submit" id="balance-modal-btn" data-i18n="cab.confirm">Подтвердить</button>
         </form>
+      </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ОБРЕЗКИ ФОТО ПРОФИЛЯ -->
+    <div class="modal-overlay" id="avatar-crop-modal">
+      <div class="crop-modal-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <div>
+            <h3 class="modal-title" data-i18n="crop.title" style="margin-bottom: 4px;">Обрезать фото профиля</h3>
+            <p class="modal-subtitle" data-i18n="crop.hint">Перетаскивайте изображение и используйте масштаб для выбора области</p>
+          </div>
+          <button type="button" class="modal-close-btn" onclick="closeAvatarCropModal()" aria-label="Закрыть" style="margin-left: 12px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="crop-viewport-wrapper">
+          <div class="crop-viewport" id="crop-viewport">
+            <canvas id="crop-canvas" width="300" height="300"></canvas>
+            <div class="crop-circular-guide"></div>
+          </div>
+        </div>
+
+        <div class="crop-zoom-bar">
+          <span data-i18n="crop.zoom">Масштаб</span>
+          <input type="range" id="crop-zoom-range" min="0.5" max="3" step="0.01" value="1" oninput="onCropZoomChange(this.value)" />
+        </div>
+
+        <div class="crop-actions">
+          <button type="button" class="btn-crop-cancel" onclick="closeAvatarCropModal()" data-i18n="crop.cancel">
+            Отмена
+          </button>
+          <button type="button" class="btn-crop-save" onclick="saveCroppedAvatar()" data-i18n="crop.save">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span data-i18n="crop.save">Сохранить</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1020,12 +1250,40 @@
         }
       }
 
+      function translateCategory(cat) {
+        if (!cat) return '';
+        const key = String(cat).toLowerCase().trim();
+        const enMap = {
+          'тексты': 'Texts',
+          'дизайн': 'Design',
+          'видео': 'Video / Reels',
+          'видео / reels': 'Video / Reels',
+          'учёба': 'Study',
+          'учеба': 'Study',
+          'таблицы': 'Spreadsheets',
+          'соцсети': 'Social Media',
+          'all': 'All tasks'
+        };
+        const ruMap = {
+          'тексты': 'Тексты',
+          'дизайн': 'Дизайн',
+          'видео': 'Видео / Reels',
+          'видео / reels': 'Видео / Reels',
+          'учёба': 'Учёба',
+          'учеба': 'Учёба',
+          'таблицы': 'Таблицы',
+          'соцсети': 'Соцсети',
+          'all': 'Все задания'
+        };
+        return currentLang === 'en' ? (enMap[key] || cat) : (ruMap[key] || cat);
+      }
+
       function showUnauthView() {
         document.getElementById('unauth-view').style.display = 'block';
         document.getElementById('auth-view').style.display = 'none';
         document.getElementById('auth-nav-container').innerHTML = `
           <button class="btn-auth-open" onclick="window.location.href='index.html'">
-            Войти на биржу
+            ${currentLang === 'ru' ? 'Войти на биржу' : 'Sign In'}
           </button>`;
       }
 
@@ -1037,11 +1295,26 @@
       function renderCabinet() {
         if (!currentUser) return;
 
-        const handle = currentUser.username || currentUser.name;
-        // Навбар
+        const isRu = currentLang === 'ru';
+        const displayName = typeof formatHumanName === 'function'
+          ? formatHumanName(currentUser.name, currentUser.username)
+          : (currentUser.name || currentUser.username || (isRu ? 'Пользователь' : 'User'));
+
+        // Навбар в шапке
         document.getElementById('auth-nav-container').innerHTML = `
-          <span style="font-size: 14px; font-weight: 600; color: var(--accent);">@${escapeHtml(handle)}</span>
-          <button class="btn-profile-action danger" onclick="logout()" style="padding: 7px 12px; font-size: 12px;">Выйти</button>
+          <a class="vw-account-link" href="3 - личный кабинет.html" style="text-decoration:none;">
+            <span class="vw-nav-avatar" style="width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-on);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;overflow:hidden;">
+              ${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;">` : (displayName.charAt(0).toUpperCase())}
+            </span>
+            <span class="vw-nav-name" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(displayName)}</span>
+          </a>
+          <button class="btn-logout-small" onclick="logout()" title="${isRu ? 'Выйти' : 'Log out'}" aria-label="${isRu ? 'Выйти' : 'Log out'}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
         `;
 
         // Профиль
@@ -1049,17 +1322,19 @@
         if (currentUser.avatar) {
           avatarEl.innerHTML = `<img src="${currentUser.avatar}" alt="${escapeHtml(currentUser.name)}">`;
         } else {
-          avatarEl.textContent = (handle || 'U').charAt(0).toUpperCase();
+          avatarEl.textContent = (displayName || 'U').charAt(0).toUpperCase();
         }
 
-        document.getElementById('cab-name').textContent = currentUser.name;
+        document.getElementById('cab-name').textContent = currentUser.name || displayName;
         document.getElementById('cab-username').textContent = '@' + (currentUser.username || 'user');
 
-        const roleText = currentUser.roleKey === 'client' ? '🎯 Заказчик' : '💼 Исполнитель';
+        const roleText = currentUser.roleKey === 'client'
+          ? (isRu ? '🎯 Заказчик' : '🎯 Client')
+          : (isRu ? '💼 Исполнитель' : '💼 Freelancer');
         document.getElementById('cab-role').textContent = roleText;
         document.getElementById('role-toggle-text').textContent = currentUser.roleKey === 'client'
-          ? 'Переключить на Исполнителя'
-          : 'Переключить на Заказчика';
+          ? (isRu ? 'Переключить на Исполнителя' : 'Switch to Freelancer')
+          : (isRu ? 'Переключить на Заказчика' : 'Switch to Client');
 
         if (currentUser.about) {
           document.getElementById('cab-about-box').style.display = 'block';
@@ -1082,14 +1357,15 @@
 
       function renderOrdersList() {
         const container = document.getElementById('cab-orders-list');
+        const isRu = currentLang === 'ru';
         if (!cabinetData.orders || cabinetData.orders.length === 0) {
           container.innerHTML = `
             <div class="empty-state-box">
               <div class="empty-state-icon">📋</div>
-              <div class="empty-state-title">У вас пока нет активных заказов</div>
-              <div class="empty-state-desc">Разместите простое онлайн-задание, чтобы найти ответственного исполнителя среди подростков.</div>
+              <div class="empty-state-title">${isRu ? 'У вас пока нет активных заказов' : 'You have no active orders yet'}</div>
+              <div class="empty-state-desc">${isRu ? 'Разместите простое онлайн-задание, чтобы найти ответственного исполнителя среди подростков.' : 'Post a simple microtask to find a skilled teen freelancer.'}</div>
               <a href="2 - объявление.html" class="btn-submit" style="display: inline-block; width: auto; padding: 11px 24px; text-decoration: none;">
-                Разместить первый заказ
+                ${isRu ? 'Разместить первый заказ' : 'Post first order'}
               </a>
             </div>
           `;
@@ -1097,19 +1373,23 @@
         }
 
         container.innerHTML = cabinetData.orders.map(task => {
+          const dateStr = new Date(task.createdAt).toLocaleDateString(isRu ? 'ru-RU' : 'en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+          });
+          const cat = translateCategory(task.category);
           return `
             <div class="cab-item-card">
               <div class="cab-item-header">
                 <div>
                   <h3 class="cab-item-title">${escapeHtml(task.title)}</h3>
-                  <div style="font-size: 12px; color: var(--accent); margin-top: 3px;">Категория: ${escapeHtml(task.category)}</div>
+                  <div style="font-size: 12px; color: var(--accent); margin-top: 3px;">${isRu ? 'Категория' : 'Category'}: ${escapeHtml(cat)}</div>
                 </div>
                 <span class="cab-item-price">${formatPrice(task.budget)}</span>
               </div>
               <p class="cab-item-desc">${escapeHtml(task.description)}</p>
               <div class="cab-item-footer">
-                <span>Опубликовано: ${new Date(task.createdAt).toLocaleDateString('ru-RU')}</span>
-                <span style="color: var(--accent); font-weight: 600;">● Открыто для откликов</span>
+                <span>${isRu ? 'Опубликовано' : 'Published'}: ${dateStr}</span>
+                <span style="color: var(--accent); font-weight: 600;">● ${isRu ? 'Открыто для откликов' : 'Open for applications'}</span>
               </div>
             </div>
           `;
@@ -1118,14 +1398,15 @@
 
       function renderWorksList() {
         const container = document.getElementById('cab-works-list');
+        const isRu = currentLang === 'ru';
         if (!cabinetData.works || cabinetData.works.length === 0) {
           container.innerHTML = `
             <div class="empty-state-box">
               <div class="empty-state-icon">💼</div>
-              <div class="empty-state-title">Вы пока не откликались на задания</div>
-              <div class="empty-state-desc">Перейдите в каталог свежих заданий, выбирайте интересные проекты и начинайте зарабатывать первые деньги.</div>
+              <div class="empty-state-title">${isRu ? 'Вы пока не откликались на задания' : 'You have not applied to any tasks yet'}</div>
+              <div class="empty-state-desc">${isRu ? 'Перейдите в каталог свежих заданий, выбирайте интересные проекты и начинайте зарабатывать первые деньги.' : 'Browse the fresh tasks catalog, pick interesting projects, and start earning money.'}</div>
               <a href="index.html#tasks" class="btn-submit" style="display: inline-block; width: auto; padding: 11px 24px; text-decoration: none;">
-                Смотреть свежие задания
+                ${isRu ? 'Смотреть свежие задания' : 'Browse fresh tasks'}
               </a>
             </div>
           `;
@@ -1133,18 +1414,21 @@
         }
 
         container.innerHTML = cabinetData.works.map(item => {
+          const dateStr = new Date(item.createdAt).toLocaleDateString(isRu ? 'ru-RU' : 'en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+          });
           return `
             <div class="cab-item-card">
               <div class="cab-item-header">
                 <h3 class="cab-item-title">${escapeHtml(item.taskTitle)}</h3>
-                <span class="cab-item-price">${escapeHtml(item.budget)}</span>
+                <span class="cab-item-price">${escapeHtml(item.budget || '')}</span>
               </div>
               <div class="cab-item-desc">
-                Связь с заказчиком: <strong>${escapeHtml(item.applicantContact)}</strong>
+                ${isRu ? 'Связь с заказчиком' : 'Client contact'}: <strong>${escapeHtml(item.applicantContact)}</strong>
               </div>
               <div class="cab-item-footer">
-                <span>Отклик отправлен: ${new Date(item.createdAt).toLocaleDateString('ru-RU')}</span>
-                <span style="color: var(--accent); font-weight: 600;">Статус: ${escapeHtml(item.statusText || 'В работе')}</span>
+                <span>${isRu ? 'Отклик отправлен' : 'Applied'}: ${dateStr}</span>
+                <span style="color: var(--accent); font-weight: 600;">${isRu ? 'Статус: В работе' : 'Status: In progress'}</span>
               </div>
             </div>
           `;
@@ -1160,11 +1444,12 @@
 
       async function toggleUserRole() {
         if (!currentUser) return;
+        const isRu = currentLang === 'ru';
         const nextRole = currentUser.roleKey === 'client' ? 'worker' : 'client';
         currentUser.roleKey = nextRole;
         saveStoredUser(currentUser);
         renderCabinet();
-        showToast('Роль изменена на: ' + (nextRole === 'client' ? 'Заказчик' : 'Исполнитель'));
+        showToast((isRu ? 'Роль изменена на: ' : 'Role changed to: ') + (nextRole === 'client' ? (isRu ? 'Заказчик' : 'Client') : (isRu ? 'Исполнитель' : 'Freelancer')));
 
         try {
           await fetch('/api/user/role', {
@@ -1196,15 +1481,27 @@
         const telegram = document.getElementById('edit-telegram').value.trim();
         const about = document.getElementById('edit-about').value.trim();
 
+        if (username) {
+          if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(username)) {
+            showToast(currentLang === 'ru'
+              ? 'Юзернейм должен быть исключительно на латинице (только буквы a-z, цифры, _, .)'
+              : 'Username must contain only Latin characters (letters a-z, numbers, _, .)');
+            return;
+          }
+        }
+
         if (displayName) currentUser.name = displayName;
         if (username) currentUser.username = username;
         currentUser.telegram = telegram;
         currentUser.about = about;
 
         saveStoredUser(currentUser);
+        if (window.VWAuth) {
+          window.VWAuth.saveLocal(currentUser, sessionToken || '', true);
+        }
         closeEditProfileModal();
         renderCabinet();
-        showToast('Профиль успешно обновлён');
+        showToast(currentLang === 'ru' ? 'Профиль успешно обновлён' : 'Profile successfully updated');
 
         try {
           await fetch('/api/user/profile', {
@@ -1215,15 +1512,220 @@
         } catch (err) {}
       }
 
+      // ==========================================
+      // СИСТЕМА ОБРЕЗКИ И ЗАГРУЗКИ АВАТАРОК
+      // ==========================================
+      let rawAvatarImage = null;
+      let cropState = {
+        scale: 1,
+        minScale: 0.5,
+        maxScale: 3,
+        posX: 0,
+        posY: 0,
+        isDragging: false,
+        dragStartX: 0,
+        dragStartY: 0
+      };
+
+      function triggerAvatarFileInput() {
+        const input = document.getElementById('avatar-file-input');
+        if (input) input.click();
+      }
+
+      function handleAvatarFileSelected(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+          showToast(currentLang === 'ru' ? 'Пожалуйста, выберите изображение' : 'Please select an image file');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = new Image();
+          img.onload = function() {
+            rawAvatarImage = img;
+            openAvatarCropModal();
+          };
+          img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function openAvatarCropModal() {
+        const modal = document.getElementById('avatar-crop-modal');
+        if (!modal || !rawAvatarImage) return;
+
+        const canvas = document.getElementById('crop-canvas');
+        const size = canvas.width;
+        const initialScale = Math.max(size / rawAvatarImage.width, size / rawAvatarImage.height);
+        cropState.scale = initialScale;
+        cropState.minScale = initialScale * 0.6;
+        cropState.maxScale = initialScale * 4;
+        cropState.posX = (size - rawAvatarImage.width * initialScale) / 2;
+        cropState.posY = (size - rawAvatarImage.height * initialScale) / 2;
+
+        const zoomSlider = document.getElementById('crop-zoom-range');
+        if (zoomSlider) {
+          zoomSlider.min = (cropState.minScale / initialScale).toString();
+          zoomSlider.max = (cropState.maxScale / initialScale).toString();
+          zoomSlider.value = '1';
+        }
+
+        modal.classList.add('active');
+        drawCropCanvas();
+        initCropInteractions();
+      }
+
+      function closeAvatarCropModal() {
+        const modal = document.getElementById('avatar-crop-modal');
+        if (modal) modal.classList.remove('active');
+        const input = document.getElementById('avatar-file-input');
+        if (input) input.value = '';
+        rawAvatarImage = null;
+      }
+
+      function drawCropCanvas() {
+        const canvas = document.getElementById('crop-canvas');
+        if (!canvas || !rawAvatarImage) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const drawW = rawAvatarImage.width * cropState.scale;
+        const drawH = rawAvatarImage.height * cropState.scale;
+        ctx.drawImage(rawAvatarImage, cropState.posX, cropState.posY, drawW, drawH);
+      }
+
+      function onCropZoomChange(val) {
+        if (!rawAvatarImage) return;
+        const canvas = document.getElementById('crop-canvas');
+        const size = canvas.width;
+        const factor = parseFloat(val);
+        const baseScale = Math.max(size / rawAvatarImage.width, size / rawAvatarImage.height);
+        const newScale = baseScale * factor;
+
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const relX = (centerX - cropState.posX) / cropState.scale;
+        const relY = (centerY - cropState.posY) / cropState.scale;
+
+        cropState.scale = newScale;
+        cropState.posX = centerX - relX * newScale;
+        cropState.posY = centerY - relY * newScale;
+
+        drawCropCanvas();
+      }
+
+      function initCropInteractions() {
+        const viewport = document.getElementById('crop-viewport');
+        if (!viewport || viewport._hasCropEvents) return;
+        viewport._hasCropEvents = true;
+
+        viewport.addEventListener('pointerdown', (e) => {
+          cropState.isDragging = true;
+          cropState.dragStartX = e.clientX - cropState.posX;
+          cropState.dragStartY = e.clientY - cropState.posY;
+          viewport.setPointerCapture(e.pointerId);
+        });
+
+        viewport.addEventListener('pointermove', (e) => {
+          if (!cropState.isDragging) return;
+          cropState.posX = e.clientX - cropState.dragStartX;
+          cropState.posY = e.clientY - cropState.dragStartY;
+          drawCropCanvas();
+        });
+
+        const stopDrag = (e) => {
+          if (cropState.isDragging) {
+            cropState.isDragging = false;
+            try { viewport.releasePointerCapture(e.pointerId); } catch (_) {}
+          }
+        };
+        viewport.addEventListener('pointerup', stopDrag);
+        viewport.addEventListener('pointercancel', stopDrag);
+
+        viewport.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const zoomSlider = document.getElementById('crop-zoom-range');
+          if (!zoomSlider) return;
+          let curr = parseFloat(zoomSlider.value);
+          curr += e.deltaY < 0 ? 0.08 : -0.08;
+          curr = Math.max(parseFloat(zoomSlider.min), Math.min(parseFloat(zoomSlider.max), curr));
+          zoomSlider.value = curr.toString();
+          onCropZoomChange(curr);
+        }, { passive: false });
+      }
+
+      async function saveCroppedAvatar() {
+        if (!rawAvatarImage) return;
+        const canvas = document.getElementById('crop-canvas');
+        if (!canvas) return;
+
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = 256;
+        exportCanvas.height = 256;
+        const ctx = exportCanvas.getContext('2d');
+
+        // Круглая маска
+        ctx.beginPath();
+        ctx.arc(128, 128, 128, 0, Math.PI * 2);
+        ctx.clip();
+
+        const ratio = 256 / canvas.width;
+        const drawW = rawAvatarImage.width * cropState.scale * ratio;
+        const drawH = rawAvatarImage.height * cropState.scale * ratio;
+        const drawX = cropState.posX * ratio;
+        const drawY = cropState.posY * ratio;
+
+        ctx.drawImage(rawAvatarImage, drawX, drawY, drawW, drawH);
+        const croppedDataUrl = exportCanvas.toDataURL('image/jpeg', 0.92);
+
+        try {
+          const res = await fetch('/api/user/avatar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...getAuthHeaders()
+            },
+            body: JSON.stringify({ avatar: croppedDataUrl })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.user) {
+              currentUser = data.user;
+            } else {
+              currentUser.avatar = croppedDataUrl;
+            }
+          } else {
+            currentUser.avatar = croppedDataUrl;
+          }
+        } catch (err) {
+          currentUser.avatar = croppedDataUrl;
+        }
+
+        saveStoredUser(currentUser);
+        if (window.VWAuth) {
+          window.VWAuth.saveLocal(currentUser, sessionToken || '', true);
+          window.VWAuth.renderAuthNav();
+        }
+
+        renderCabinet();
+        closeAvatarCropModal();
+        showToast(currentLang === 'ru' ? 'Фото профиля успешно обновлено!' : 'Profile photo updated successfully!');
+      }
+
       // Баланс
       function openBalanceModal(action) {
         balanceAction = action;
         const isDep = action === 'deposit';
-        document.getElementById('balance-modal-title').textContent = isDep ? 'Пополнение баланса' : 'Вывод средств';
+        const isRu = currentLang === 'ru';
+        document.getElementById('balance-modal-title').textContent = isDep ? (isRu ? 'Пополнение баланса' : 'Top up balance') : (isRu ? 'Вывод средств' : 'Withdraw funds');
         document.getElementById('balance-modal-subtitle').textContent = isDep
-          ? 'Пополнение без комиссии через СБП или банковскую карту'
-          : 'Моментальный перевод по номеру телефона через СБП';
-        document.getElementById('balance-modal-btn').textContent = isDep ? 'Пополнить баланс' : 'Вывести средства';
+          ? (isRu ? 'Пополнение без комиссии через СБП или банковскую карту' : 'Zero commission via card or instant transfer')
+          : (isRu ? 'Моментальный перевод по номеру телефона через СБП' : 'Instant transfer to card or phone number');
+        document.getElementById('balance-modal-btn').textContent = isDep ? (isRu ? 'Пополнить баланс' : 'Top up balance') : (isRu ? 'Вывести средства' : 'Withdraw funds');
         document.getElementById('balance-amount-input').value = '500';
         document.getElementById('balance-modal').classList.add('active');
       }
@@ -1235,6 +1737,7 @@
       async function handleBalanceSubmit(e) {
         e.preventDefault();
         if (!currentUser) return;
+        const isRu = currentLang === 'ru';
         const amount = parseFloat(document.getElementById('balance-amount-input').value) || 0;
         if (amount <= 0) return;
 
@@ -1242,7 +1745,7 @@
           currentUser.balance = (currentUser.balance || 0) + amount;
         } else {
           if ((currentUser.balance || 0) < amount) {
-            showToast('Недостаточно средств на балансе');
+            showToast(isRu ? 'Недостаточно средств на балансе' : 'Insufficient funds on balance');
             return;
           }
           currentUser.balance = Math.max(0, (currentUser.balance || 0) - amount);
@@ -1251,7 +1754,9 @@
         saveStoredUser(currentUser);
         closeBalanceModal();
         renderCabinet();
-        showToast(balanceAction === 'deposit' ? 'Баланс успешно пополнен!' : 'Заявка на вывод выполнена!');
+        showToast(isRu
+          ? (balanceAction === 'deposit' ? 'Баланс успешно пополнен!' : 'Заявка на вывод средств оформлена!')
+          : (balanceAction === 'deposit' ? 'Balance topped up successfully!' : 'Withdrawal request submitted!'));
 
         try {
           await fetch('/api/user/balance', {
@@ -1290,12 +1795,13 @@
       };
 
       async function handleGoogleOAuthLogin() {
+        const isRu = currentLang === 'ru';
         if (typeof window.signInWithGoogleOAuth !== 'function') {
-          showToast('Модуль Google OAuth инициализируется...');
+          showToast(isRu ? 'Модуль Google OAuth инициализируется...' : 'Google OAuth is initializing...');
           return;
         }
         try {
-          showToast('Открываем окно Google...');
+          showToast(isRu ? 'Открываем окно Google...' : 'Opening Google window...');
           const googleData = await window.signInWithGoogleOAuth();
 
           let sessionUser = null;
@@ -1320,7 +1826,7 @@
             sessionToken = 'token_' + Math.random().toString(36).substring(2);
             sessionUser = {
               id: 'user_' + googleData.uid,
-              name: googleData.displayName || 'Пользователь Google',
+              name: googleData.displayName || (isRu ? 'Пользователь Google' : 'Google User'),
               username: (googleData.displayName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '_').slice(0, 15),
               email: googleData.email,
               avatar: googleData.photoURL,
@@ -1335,21 +1841,21 @@
           localStorage.setItem('vw_session_token', sessionToken);
           saveStoredUser(currentUser);
           loadCabinetData();
-          showToast('Добро пожаловать, ' + currentUser.name + '!');
+          showToast((isRu ? 'Добро пожаловать, ' : 'Welcome, ') + currentUser.name + '!');
         } catch (err) {
           if (err && err.code === 'auth/popup-closed-by-user') {
-            showToast('Вход через Google отменён');
+            showToast(isRu ? 'Вход через Google отменён' : 'Google sign-in was canceled');
           } else if (err && err.code === 'auth/unauthorized-domain') {
             const domain = window.location.hostname;
-            showToast(`Домен ${domain} не разрешён в Firebase Console! Добавьте его в Authorized domains.`);
-            alert(`Ошибка авторизации Firebase (auth/unauthorized-domain):\n\nДомен "${domain}" не добавлен в список доверенных доменов проекта Firebase.\n\nКак исправить за 1 минуту:\n1. Откройте https://console.firebase.google.com/project/gen-lang-client-0591838063/authentication/settings\n2. Перейдите в раздел "Authorized domains" (Авторизованные домены)\n3. Нажмите "Add domain" и введите: ${domain}\n4. Нажмите "Add" и обновите страницу.`);
+            showToast(`Domain ${domain} is not authorized in Firebase Console!`);
           } else {
-            showToast(err.friendlyMessage || err.message || 'Ошибка входа через Google');
+            showToast(err.friendlyMessage || err.message || (isRu ? 'Ошибка входа через Google' : 'Google sign-in error'));
           }
         }
       }
 
       async function logout() {
+        const isRu = currentLang === 'ru';
         try {
           if (typeof window.signOutFromFirebase === 'function') {
             await window.signOutFromFirebase();
@@ -1360,7 +1866,7 @@
         sessionToken = '';
         saveStoredUser(null);
         showUnauthView();
-        showToast('Вы вышли из аккаунта');
+        showToast(isRu ? 'Вы вышли из аккаунта' : 'You have logged out');
       }
 
       function openSettingsModal() { updateSettingsUI(); document.getElementById('settings-modal').classList.add('active'); }

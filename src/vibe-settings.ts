@@ -182,11 +182,40 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'cab.aboutPlaceholder': 'Расскажите кратко о своём опыте и навыках...',
     'cab.cancel': 'Отмена',
     'cab.saveChanges': 'Сохранить изменения',
+    'cab.changePhoto': 'Изменить фото профиля',
+    'cab.usernameLatinHint': 'Только латинские буквы (a-z, 0-9, _)',
+    'cab.tabReviews': 'Отзывы',
+    'cab.reviewsCount': 'Отзывы',
+    'cab.emptyReviews': 'Пока нет отзывов',
+    'cab.emptyReviewsDesc': 'Отзывы появятся здесь после выполнения первых заказов.',
+    'cab.rating': 'Рейтинг',
+    'cab.paymentMethod': 'Способ оплаты / вывода',
+    'cab.methodCard': 'Банковская карта (РФ / СНГ / Мир)',
+    'cab.methodSbp': 'Система быстрых платежей (СБП)',
     'cab.balanceModalDeposit': 'Пополнение баланса',
     'cab.balanceModalWithdraw': 'Вывод средств',
     'cab.balanceModalSub': 'Без комиссии через СБП или банковскую карту',
     'cab.amountLabel': 'Сумма в рублях (₽)',
     'cab.confirm': 'Подтвердить',
+
+    // Crop Modal
+    'crop.title': 'Обрезать фото профиля',
+    'crop.hint': 'Перетаскивайте изображение и используйте масштаб для выбора области',
+    'crop.zoom': 'Масштаб',
+    'crop.cancel': 'Отмена',
+    'crop.save': 'Сохранить',
+
+    // Post task details
+    'post.deadlineLabel': 'Срок выполнения',
+    'post.deadlineUrgent': 'Срочно (до 24 часов)',
+    'post.deadline2_3': '2-3 дня',
+    'post.deadlineWeek': 'До недели',
+    'post.deadlineFlexible': 'Без спешки',
+    'post.contactLabel': 'Контакт для связи (Telegram, телефон или почта)',
+    'post.contactHint': 'Укажите удобный контакт для откликов',
+    'post.contactPlaceholder': '@username или почта/телефон',
+    'post.zeroCommission': 'Без комиссий сервиса для первых заказов',
+    'post.safeDeal': 'Безопасная сделка и проверенные исполнители',
 
     // Auth Modal
     'auth.title': 'Вход в Vibe Working',
@@ -200,8 +229,11 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'auth.orContacts': 'или через контакты',
     'auth.byPhone': 'По телефону',
     'auth.byEmail': 'По почте',
-    'auth.nameLabel': 'Ваше имя или никнейм',
-    'auth.namePlaceholder': 'Например: Артём',
+    'auth.nameLabel': 'Ваше имя',
+    'auth.namePlaceholder': 'Например: Александр',
+    'auth.usernameLabel': 'Юзернейм (латиница)',
+    'auth.usernamePlaceholder': 'username',
+    'auth.usernameLatinHint': 'Только латинские буквы a-z, цифры и _',
     'auth.roleLabel': 'Кто вы на Vibe Working?',
     'auth.role.worker': '💼 Исполнитель',
     'auth.role.workerSub': 'Хочу брать задания',
@@ -380,11 +412,40 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'cab.aboutPlaceholder': 'Briefly describe your experience and skills...',
     'cab.cancel': 'Cancel',
     'cab.saveChanges': 'Save changes',
+    'cab.changePhoto': 'Change profile photo',
+    'cab.usernameLatinHint': 'Latin characters only (a-z, 0-9, _)',
+    'cab.tabReviews': 'Reviews',
+    'cab.reviewsCount': 'Reviews',
+    'cab.emptyReviews': 'No reviews yet',
+    'cab.emptyReviewsDesc': 'Reviews will appear here after completing your first orders.',
+    'cab.rating': 'Rating',
+    'cab.paymentMethod': 'Payment / Payout method',
+    'cab.methodCard': 'Bank card (Visa / Mastercard)',
+    'cab.methodSbp': 'Instant Payout (SBP)',
     'cab.balanceModalDeposit': 'Top up balance',
     'cab.balanceModalWithdraw': 'Withdraw funds',
     'cab.balanceModalSub': 'Zero commission via bank card or instant transfer',
     'cab.amountLabel': 'Amount in rubles (₽)',
     'cab.confirm': 'Confirm',
+
+    // Crop Modal
+    'crop.title': 'Crop Profile Photo',
+    'crop.hint': 'Drag the image and use the zoom slider to adjust the crop area',
+    'crop.zoom': 'Zoom',
+    'crop.cancel': 'Cancel',
+    'crop.save': 'Save',
+
+    // Post task details
+    'post.deadlineLabel': 'Deadline',
+    'post.deadlineUrgent': 'Urgent (under 24 hours)',
+    'post.deadline2_3': '2-3 days',
+    'post.deadlineWeek': 'Up to a week',
+    'post.deadlineFlexible': 'Flexible',
+    'post.contactLabel': 'Contact information (Telegram, phone or email)',
+    'post.contactHint': 'Specify convenient contact info for applications',
+    'post.contactPlaceholder': '@username or email/phone',
+    'post.zeroCommission': 'Zero platform fees for initial orders',
+    'post.safeDeal': 'Safe deal and verified freelancers',
 
     // Auth Modal
     'auth.title': 'Sign in to Vibe Working',
@@ -398,8 +459,11 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'auth.orContacts': 'or via contacts',
     'auth.byPhone': 'By phone',
     'auth.byEmail': 'By email',
-    'auth.nameLabel': 'Your name or nickname',
+    'auth.nameLabel': 'Your name',
     'auth.namePlaceholder': 'e.g. Alex',
+    'auth.usernameLabel': 'Username (Latin only)',
+    'auth.usernamePlaceholder': 'username',
+    'auth.usernameLatinHint': 'Latin letters a-z, numbers and _ only',
     'auth.roleLabel': 'Who are you on Vibe Working?',
     'auth.role.worker': '💼 Freelancer',
     'auth.role.workerSub': 'I want to take tasks',
@@ -428,6 +492,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'toast.curSwitched': 'Currency changed to ',
     'toast.orderCreated': 'Task successfully published!',
     'toast.profileSaved': 'Profile successfully updated!',
+    'toast.avatarSaved': 'Profile photo successfully updated!',
+    'toast.avatarError': 'Failed to upload photo',
     'toast.fillAllFields': 'Please fill in all required fields',
     'toast.googleCancel': 'Google sign-in cancelled',
     'toast.googleOpening': 'Opening Google window...',
@@ -1133,6 +1199,22 @@ class AuthSyncManager {
     } catch (_) {}
   }
 
+export function formatDisplayName(name?: string, username?: string): string {
+  if (name && name.trim()) {
+    const clean = name.trim().replace(/^@/, '');
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0]} ${parts[1].charAt(0).toUpperCase()}.`;
+    }
+    return clean;
+  }
+  if (username) {
+    const cleanU = username.trim().replace(/^@/, '');
+    return cleanU.charAt(0).toUpperCase() + cleanU.slice(1);
+  }
+  return 'Пользователь';
+}
+
   public renderAuthNav() {
     if (typeof document === 'undefined') return;
     const container = document.getElementById('auth-nav-container');
@@ -1154,7 +1236,7 @@ class AuthSyncManager {
         </button>
       `;
     } else {
-      const handle = user.username ? `@${user.username}` : user.name;
+      const displayName = formatDisplayName(user.name, user.username);
       const initial = (user.name || user.username || 'U').charAt(0).toUpperCase();
       const avatarHtml = user.avatar
         ? `<img src="${user.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
@@ -1166,7 +1248,7 @@ class AuthSyncManager {
             ${avatarHtml}
           </span>
           <span class="vw-nav-name" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-            ${this.escape(handle)}
+            ${this.escape(displayName)}
           </span>
         </a>
         <button class="btn-logout-small" onclick="if(typeof logout==='function'){logout()}else{window.VWAuth.logout()}" title="${logoutTitle}" aria-label="${logoutTitle}" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:7px 10px;border-radius:9px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
@@ -1204,6 +1286,8 @@ if (typeof window !== 'undefined') {
   (window as any).setLanguage = (lang: 'ru' | 'en') => settingsManager.setLanguage(lang);
   (window as any).setCurrency = (cur: any) => settingsManager.setCurrency(cur);
   (window as any).formatPrice = (val: number) => settingsManager.formatPrice(val);
+  (window as any).formatDisplayName = (name?: string, u?: string) => formatDisplayName(name, u);
   (window as any).getStoredUser = () => authSyncManager.getUser();
   (window as any).saveStoredUser = (user: any, token?: string) => authSyncManager.saveLocal(user, token || '');
 }
+

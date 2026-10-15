@@ -307,7 +307,8 @@
         padding: 7px 10px; border-radius: 9px; font-size: 13px; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;
       }
-      .btn-logout-small:hover { border-color: var(--danger); color: var(--danger); }
+      .btn-logout-small:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-soft); }
+      .btn-logout-small[title="Выйти"]:hover, .btn-logout-small[title="Log out"]:hover { border-color: var(--danger); color: var(--danger); box-shadow: none; }
 
       /* МОДАЛЬНЫЕ ОКНА */
       .modal-overlay {
@@ -526,6 +527,12 @@
             <li><a href="#tasks" class="nav-post-btn" data-i18n="nav.find">Найти работу</a></li>
             <li><a href="2 - объявление.html" class="nav-post-btn" data-i18n="nav.post" onclick="handlePostTaskClick(event)">Разместить заказ</a></li>
           </ul>
+          <button type="button" class="btn-logout-small" onclick="openSettingsModal()" title="Настройки" data-i18n-title="settings.title" aria-label="Настройки" style="margin-right: 2px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
           <div class="auth-nav-container" id="auth-nav-container"></div>
         </nav>
       </div>
@@ -1309,6 +1316,34 @@
       // ==========================================
       let activeCategoryFilter = 'all';
 
+      function translateCategory(cat) {
+        if (!cat) return '';
+        const key = String(cat).toLowerCase().trim();
+        const enMap = {
+          'тексты': 'Texts',
+          'дизайн': 'Design',
+          'видео': 'Video / Reels',
+          'видео / reels': 'Video / Reels',
+          'учёба': 'Study',
+          'учеба': 'Study',
+          'таблицы': 'Spreadsheets',
+          'соцсети': 'Social Media',
+          'all': 'All tasks'
+        };
+        const ruMap = {
+          'тексты': 'Тексты',
+          'дизайн': 'Дизайн',
+          'видео': 'Видео / Reels',
+          'видео / reels': 'Видео / Reels',
+          'учёба': 'Учёба',
+          'учеба': 'Учёба',
+          'таблицы': 'Таблицы',
+          'соцсети': 'Соцсети',
+          'all': 'Все задания'
+        };
+        return currentLang === 'en' ? (enMap[key] || cat) : (ruMap[key] || cat);
+      }
+
       async function fetchTasks() {
         const grid = document.getElementById('tasks-grid');
         if (!grid) return;
@@ -1342,6 +1377,14 @@
 
           grid.innerHTML = tasks.map(task => {
             const priceFormatted = formatPrice(task.budget);
+            const authorDisplayName = typeof formatHumanName === 'function'
+              ? formatHumanName(task.authorDisplayName || task.authorName)
+              : (task.authorDisplayName || task.authorName || (currentLang === 'ru' ? 'Пользователь' : 'User'));
+            const catDisplay = translateCategory(task.category);
+            const dateStr = new Date(task.createdAt).toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US', {
+              month: 'short', day: 'numeric', year: 'numeric'
+            });
+
             return `
               <div class="task-card" data-category="${escapeHtml(task.category)}">
                 <div>
@@ -1351,11 +1394,11 @@
                   </div>
                   <p class="task-desc">${escapeHtml(task.description)}</p>
                   <div class="task-author">
-                    ${currentLang === 'ru' ? 'Заказчик' : 'Client'}: <strong>${escapeHtml(task.authorName)}</strong>
+                    ${currentLang === 'ru' ? 'Заказчик' : 'Client'}: <strong>${escapeHtml(authorDisplayName)}</strong>
                   </div>
                   <div class="task-tags">
-                    <span class="tag-chip">${escapeHtml(task.category)}</span>
-                    <span class="tag-chip">${new Date(task.createdAt).toLocaleDateString(currentLang === 'ru' ? 'ru-RU' : 'en-US')}</span>
+                    <span class="tag-chip">${escapeHtml(catDisplay)}</span>
+                    <span class="tag-chip">${dateStr}</span>
                   </div>
                 </div>
                 <button class="btn-apply" onclick="applyToRealTask('${task.id}', '${escapeHtml(task.title).replace(/'/g, "\\'")}', '${priceFormatted}')">
@@ -1514,11 +1557,14 @@
           return;
         }
 
-        const handle = currentUser.username || currentUser.name;
+        const displayName = typeof formatHumanName === 'function'
+          ? formatHumanName(currentUser.name, currentUser.username)
+          : (currentUser.name || currentUser.username || (currentLang === 'ru' ? 'Пользователь' : 'User'));
+        const initial = (currentUser.name || currentUser.username || 'U').charAt(0).toUpperCase();
         container.innerHTML = `
-          <a class="vw-account-link" href="3 - личный кабинет.html" title="Личный кабинет">
-            <span class="vw-nav-avatar">${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="">` : escapeHtml((handle || 'U').charAt(0).toUpperCase())}</span>
-            <span class="vw-nav-name">${escapeHtml(handle)}</span>
+          <a class="vw-account-link" href="3 - личный кабинет.html" title="${currentLang === 'ru' ? 'Личный кабинет' : 'Dashboard'}">
+            <span class="vw-nav-avatar">${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="">` : escapeHtml(initial)}</span>
+            <span class="vw-nav-name">${escapeHtml(displayName)}</span>
           </a>
           <button class="btn-logout-small" onclick="logout()" title="${escapeHtml(tr('settings.logout'))}" aria-label="Выйти">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>

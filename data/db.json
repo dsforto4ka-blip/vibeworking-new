@@ -35,11 +35,24 @@
   "tasks": [
     {
       "id": "task_1791962446329u0x",
-      "title": "Довыд пентюх",
-      "description": "ну довыд лох педальный конкретно",
-      "budget": 650,
+      "title": "Смонтировать динамичный Reels для бренда",
+      "description": "Нужно смонтировать короткое видео из готовых исходников, наложить трек и субтитры в едином стиле.",
+      "budget": 1500,
       "currency": "RUB",
-      "category": "тексты",
+      "category": "видео",
+      "authorId": "user_alex_popov_demo",
+      "authorName": "Александр Попов",
+      "authorContact": "@alex_popov",
+      "createdAt": "2026-10-15T08:30:00.000Z",
+      "status": "open"
+    },
+    {
+      "id": "task_1791962446330u0y",
+      "title": "Оформить карточки товаров для маркетплейса",
+      "description": "Сделать привлекательный дизайн 5 карточек товаров в Figma или Canva по готовому ТЗ.",
+      "budget": 2000,
+      "currency": "RUB",
+      "category": "дизайн",
       "authorId": "user_viP76CNhDJZxaTZGQVYamM5wcp13",
       "authorName": "Даня",
       "authorContact": "dsforto4ka@gmail.com",
